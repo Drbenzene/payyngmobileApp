@@ -7,7 +7,7 @@ import {
   Pressable,
 } from "react-native";
 import Colors from "@/constants/Colors";
-import LocalAuthentication from "expo-local-authentication";
+import * as LocalAuthentication from "expo-local-authentication";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 

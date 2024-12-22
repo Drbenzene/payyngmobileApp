@@ -11,14 +11,14 @@ import React from "react";
 import { moderateScale } from "react-native-size-matters";
 import { router, Stack } from "expo-router";
 import Colors from "@/constants/Colors";
-import { Image } from "expo-image";
+import { ImageBackground } from "expo-image";
 const { width, height } = Dimensions.get("window");
 
 export default function GetStarted() {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       {/* <StatusBar style="dark" /> */}
-      <Image
+      <ImageBackground
         source={require("../../assets/images/iphone4.png")}
         contentFit="cover"
         style={styles.image}
@@ -69,7 +69,7 @@ export default function GetStarted() {
             </TouchableOpacity>
           </View>
         </View>
-      </Image>
+      </ImageBackground>
     </SafeAreaView>
   );
 }
