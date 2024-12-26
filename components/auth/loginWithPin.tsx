@@ -10,6 +10,7 @@ import Colors from "@/constants/Colors";
 import * as LocalAuthentication from "expo-local-authentication";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { ms } from "react-native-size-matters";
 
 const LoginWithPin = () => {
   const { push } = useRouter();
@@ -127,6 +128,14 @@ const LoginWithPin = () => {
       >
         <Text style={styles.submitText}>Login</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.loginWithPasswordContainer}>
+        <Text onPress={handleFingerprintLogin}>
+          <Text style={styles.loginWithPasswordText}>
+            Proceed with Password
+          </Text>
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -146,6 +155,7 @@ const styles = StyleSheet.create({
     color: Colors.white,
     textAlign: "center",
     marginBottom: 10,
+    fontFamily: "payyng-bold",
   },
   subText: {
     fontSize: 16,
@@ -225,5 +235,18 @@ const styles = StyleSheet.create({
   pinText: {
     color: Colors.white,
     fontSize: 30,
+  },
+  loginWithPasswordText: {
+    color: Colors.white,
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: 20,
+    fontFamily: "payyng-semibold",
+  },
+
+  loginWithPasswordContainer: {
+    marginTop: ms(40),
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
 
-// Import the screens in the auth folder
 import Login from "./login";
 import GetStarted from "./get-started";
 import Onboarding from "./onboarding";

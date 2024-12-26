@@ -93,9 +93,14 @@ import { FontAwesome5, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { ms } from "react-native-size-matters";
 import Colors from "@/constants/Colors";
 import AppLayout from "@/components/Layouts/AppLayout";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+
 const { width } = Dimensions.get("window");
 
 const HomeScreen = () => {
+  const { push } = useRouter();
   const currencyCards = [
     {
       id: 1,
@@ -128,11 +133,16 @@ const HomeScreen = () => {
   ];
 
   const bills = [
-    { id: 1, name: "Airtime", icon: "phone" },
-    { id: 2, name: "Data", icon: "wifi" },
-    { id: 3, name: "Electricity", icon: "bolt" },
-    { id: 4, name: "Remita Payments", icon: "file-invoice" },
-    { id: 5, name: "Water Bill", icon: "tint" },
+    { id: 1, name: "Airtime", icon: "phone", route: "/(pages)/airtime" },
+    { id: 2, name: "Data", icon: "wifi", route: "/(pages)/airtime" },
+    { id: 3, name: "Electricity", icon: "bolt", route: "/(pages)/airtime" },
+    {
+      id: 4,
+      name: "Remita Payments",
+      icon: "file-invoice",
+      route: "/(pages)/airtime",
+    },
+    { id: 5, name: "Water Bill", icon: "tint", route: "/(pages)/airtime" },
   ];
 
   const recentTransactions = [
@@ -168,6 +178,7 @@ const HomeScreen = () => {
 
   return (
     <AppLayout>
+      <StatusBar style="dark" />
       <RefreshControl
         refreshing={false}
         onRefresh={() => {
@@ -228,8 +239,14 @@ const HomeScreen = () => {
             {/* Bills Section */}
             <Text style={styles.sectionHeader}>Pay Your Bills</Text>
             <View style={styles.billsContainer}>
-              {bills.map((bill) => (
-                <TouchableOpacity key={bill.id} style={styles.billItem}>
+              {bills.map((bill: any) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    push(bill.route);
+                  }}
+                  key={bill.id}
+                  style={styles.billItem}
+                >
                   <FontAwesome5
                     name={bill.icon}
                     size={24}
@@ -298,7 +315,6 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 24,
-    fontWeight: "bold",
     marginBottom: 16,
     fontFamily: "payyng-bold",
     color: Colors.white,
@@ -335,8 +351,8 @@ const styles = StyleSheet.create({
   balanceText: {
     color: "#fff",
     fontSize: 24,
-    fontWeight: "bold",
     marginVertical: 8,
+    fontFamily: "payyng-bold",
   },
   accountText: {
     color: "#fff",
@@ -358,12 +374,11 @@ const styles = StyleSheet.create({
   },
   iconText: {
     fontSize: 10,
-    fontWeight: "bold",
+    fontFamily: "payyng-bold",
     color: Colors.greenColor,
   },
   sectionHeader: {
     fontSize: 18,
-    fontWeight: "bold",
     marginVertical: 16,
     color: Colors.white,
     fontFamily: "payyng-bold",
@@ -377,10 +392,18 @@ const styles = StyleSheet.create({
     width: "30%",
     alignItems: "center",
     marginBottom: 16,
+    backgroundColor: Colors.white,
+    padding: 12,
+    borderRadius: 10,
+    paddingVertical: ms(20),
   },
   billText: {
     marginTop: 8,
     fontSize: 14,
+    color: Colors.greenColor,
+    textAlign: "center",
+    textTransform: "capitalize",
+    fontFamily: "payyng-semibold",
   },
   transactionItem: {
     flexDirection: "row",
@@ -395,7 +418,9 @@ const styles = StyleSheet.create({
   },
   transactionType: {
     fontSize: 14,
-    fontWeight: "bold",
+    // fontWeight: "bold",
+    fontFamily: "payyng-semibold",
+    color: Colors.white,
   },
   transactionAmount: {
     fontSize: 14,

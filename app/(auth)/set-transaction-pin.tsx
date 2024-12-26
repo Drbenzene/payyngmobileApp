@@ -41,7 +41,7 @@ const SetTransactionPin = () => {
             otp: Yup.string().required("Required"),
           })}
           onSubmit={(values) => {
-            push("/(tabs)/");
+            push("/(tabs)");
             console.log(values);
           }}
         >

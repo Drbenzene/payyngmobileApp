@@ -15,11 +15,22 @@ import { Stack, useRouter } from "expo-router";
 import Colors from "@/constants/Colors";
 import PayyngButton from "@/components/button/PayyngButton";
 import AuthLayout from "@/components/Layouts/AuthLayout";
-import PayyngBar from "@/components/Layouts/PayyngBar";
+import { register } from "@/hooks/useAuth";
+import { Toast } from "@/utils/toast";
+
 const { width, height } = Dimensions.get("window");
 
 const Signup = () => {
-  const { push } = useRouter();
+  const { push, replace } = useRouter();
+
+  const loginHandler = async (values: any) => {
+    const res = await register(values);
+
+    if (res) {
+      replace("/(auth)/verify-email");
+      Toast.success(`Welcome to Payyng`);
+    }
+  };
 
   return (
     <AuthLayout>
@@ -102,7 +113,7 @@ const Signup = () => {
                 id="password"
                 labelColor={Colors.white}
                 returnKeyType="next"
-                value={values.password}
+                value={values.phone}
                 keyboardType="default"
                 placeholder="phone"
                 onChangeText={handleChange("phone")}
@@ -117,9 +128,9 @@ const Signup = () => {
                 label="Referral Code (Optional)"
                 id="referralCode"
                 returnKeyType="next"
-                value={values.email}
+                value={values.referralCode}
                 labelColor={Colors.white}
-                keyboardType="email-address"
+                keyboardType="default"
                 placeholder="Email"
                 onChangeText={handleChange("referralCode")}
                 onBlur={handleBlur("referralCode")}
@@ -136,11 +147,7 @@ const Signup = () => {
                 />
               </View>
 
-              <TouchableOpacity
-                onPress={() => {
-                  push("/(auth)/login");
-                }}
-              >
+              <TouchableOpacity onPress={() => handleSubmit()}>
                 <Text style={styles.backToLogin}>
                   Already have an account?{" "}
                   <Text style={{ color: Colors.white }}>Login</Text>
@@ -169,7 +176,6 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: ms(40),
-    fontWeight: "bold",
     color: Colors.white,
     marginTop: vs(20),
     fontFamily: "payyng-bold",
@@ -179,6 +185,7 @@ const styles = StyleSheet.create({
     fontSize: ms(16),
     textAlign: "left",
     marginTop: vs(10),
+    fontFamily: "payyng-semibold",
   },
   formContainer: {
     flex: 1,

@@ -1,6 +1,7 @@
 import { StyleSheet, SafeAreaView } from "react-native";
 import React from "react";
 import LoginWithPin from "@/components/auth/loginWithPin";
+import LoginWithPassword from "@/components/auth/LoginWithPassword";
 import { vs, s, ms } from "react-native-size-matters";
 import { Stack, useRouter } from "expo-router";
 import AuthLayout from "@/components/Layouts/AuthLayout";
@@ -18,7 +19,8 @@ const Login = () => {
         }}
       />
       <SafeAreaView style={styles.container}>
-        <LoginWithPin />
+        {/* <LoginWithPin /> */}
+        <LoginWithPassword />
       </SafeAreaView>
     </AuthLayout>
   );

@@ -2,8 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import colors from "../../constants/Colors";
 import { Image } from "expo-image";
-import { scale, verticalScale } from "react-native-size-matters";
-
+import { ms, scale, verticalScale } from "react-native-size-matters";
 interface Props {
   title: string;
   imageRight: any;
@@ -36,6 +35,8 @@ export default function PayyngBar({
         // backgroundColor: colors.black,
         paddingVertical: 10,
         paddingHorizontal: 20,
+        paddingTop: ms(20),
+        backgroundColor: colors.black,
       }}
     >
       <TouchableOpacity onPress={onPressLeft}>
@@ -51,8 +52,8 @@ export default function PayyngBar({
       <Text
         style={{
           fontSize: scale(20),
-          fontFamily: "worksans-semibold",
-          color: colors.textColor,
+          fontFamily: "payyng-bold",
+          color: colors.greenColor,
         }}
       >
         {title}

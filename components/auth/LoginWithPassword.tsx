@@ -14,9 +14,12 @@ import Colors from "@/constants/Colors";
 import PayyngButton from "@/components/button/PayyngButton";
 import { useRouter } from "expo-router";
 const { width, height } = Dimensions.get("window");
+// import { useSession } from "@/features/ctx";
 
 const LoginWithPassword = () => {
   const { push } = useRouter();
+
+  // const { signIn } = useSession();
   return (
     <View style={styles.container}>
       <View>
@@ -130,7 +133,6 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: ms(40),
-    fontWeight: "bold",
     color: Colors.white,
     marginTop: vs(20),
     fontFamily: "payyng-bold",
@@ -140,6 +142,7 @@ const styles = StyleSheet.create({
     fontSize: ms(16),
     textAlign: "left",
     marginTop: vs(10),
+    fontFamily: "payyng-semibold",
   },
   formContainer: {
     flex: 1,

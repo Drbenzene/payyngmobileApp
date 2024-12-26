@@ -12,6 +12,7 @@ import ErrorMsg from "./errorMsg";
 import colors from "../../constants/Colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import PhoneInput from "react-native-phone-input";
+import CurrencyInput from "react-native-currency-input";
 
 interface PayyngCustomFieldProps {
   type:
@@ -28,6 +29,7 @@ interface PayyngCustomFieldProps {
     | "PHONE"
     | "SEARCH"
     | "URL"
+    | "CURRENCY"
     | "FILE";
 
   label: string;
@@ -38,13 +40,14 @@ interface PayyngCustomFieldProps {
   placeholder: string;
   returnKeyType: any;
   keyboardType: any;
-  placeholderTextColor: any;
+  placeholderTextColor?: any;
   id?: any;
   onPress?: string;
   maxLength?: number;
   labelColor?: string;
   setValues?: any;
   values?: any;
+  currency?: string;
 }
 
 const PayyngCustomField = ({
@@ -59,13 +62,15 @@ const PayyngCustomField = ({
   onBlur,
   errorMessage,
   placeholderTextColor,
-  onPress,
   maxLength,
   labelColor,
   setValues,
   values,
+  currency,
 }: PayyngCustomFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
+  // const [amountValue, setAmountValue] = useState<any>();
+
   return (
     <View
       style={{
@@ -74,7 +79,7 @@ const PayyngCustomField = ({
     >
       <Text
         style={{
-          fontFamily: "payyng-regular",
+          fontFamily: "payyng-semibold",
           fontSize: Platform.OS === "ios" ? 17 : 16,
           marginTop: 15,
           color: labelColor || colors.black,
@@ -130,7 +135,7 @@ const PayyngCustomField = ({
               value={value}
               style={styles.inputbox}
               onChangeText={onChangeText}
-              placeholderTextColor={colors.placeHolderColor}
+              placeholderTextColor={colors.black || placeholderTextColor}
               keyboardType={keyboardType}
               returnKeyType={returnKeyType}
               onBlur={onBlur}
@@ -178,6 +183,31 @@ const PayyngCustomField = ({
             />
           </View>
         )}
+
+        {type === "CURRENCY" && (
+          <CurrencyInput
+            value={value}
+            onChangeValue={(val) => {
+              console.log(val, "YEYEYEYEY");
+              console.log(id, "THE ID");
+              setValues({
+                ...values,
+                [id]: val,
+              });
+              // setValues(val);
+            }}
+            prefix={currency}
+            delimiter=","
+            separator="."
+            precision={2}
+            minValue={0}
+            style={styles.inputbox}
+            showPositiveSign={false}
+            onChangeText={(formattedValue) => {
+              console.log(formattedValue, "the formatted valye"); // R$ +2.310,46
+            }}
+          />
+        )}
       </View>
 
       {errorMessage && <ErrorMsg message={`${errorMessage}`} />}
@@ -190,7 +220,7 @@ export default PayyngCustomField;
 const styles = StyleSheet.create({
   inputbox: {
     backgroundColor: "transparent",
-    fontFamily: "payyng-regular",
+    fontFamily: "payyng-semibold",
     fontSize: Platform.OS === "ios" ? 16 : 15,
     paddingVertical: 3,
     color: colors.black,
