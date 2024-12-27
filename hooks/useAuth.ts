@@ -1,9 +1,10 @@
 import APICall from "@/features/ApiCall";
 
 export function login(payload: any) {
-  return APICall("/login", "POST", payload);
+  return APICall("auth/login", "POST", payload);
 }
 
 export function register(payload: any) {
-  return APICall("/register", "POST", payload);
+  console.log(payload, "THE PAYLOAD");
+  return APICall("auth/register", "POST", payload);
 }

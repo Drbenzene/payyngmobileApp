@@ -14,12 +14,12 @@ import Colors from "@/constants/Colors";
 import PayyngButton from "@/components/button/PayyngButton";
 import { useRouter } from "expo-router";
 const { width, height } = Dimensions.get("window");
-// import { useSession } from "@/features/ctx";
+import { useSession } from "@/features/ctx";
 
 const LoginWithPassword = () => {
   const { push } = useRouter();
 
-  // const { signIn } = useSession();
+  const { signIn, isLoading } = useSession();
   return (
     <View style={styles.container}>
       <View>
@@ -33,15 +33,16 @@ const LoginWithPassword = () => {
           email: "",
           password: "",
         }}
-        // validationSchema={Yup.object({
-        //   email: Yup.string()
-        //     .email("Invalid email address")
-        //     .required("Required"),
-        //   password: Yup.string().required("Required"),
-        // })}
-        onSubmit={(values) => {
-          push("/(tabs)");
+        validationSchema={Yup.object({
+          email: Yup.string()
+            .email("Invalid email address")
+            .required("Required"),
+          password: Yup.string().required("Required"),
+        })}
+        onSubmit={(values, { setSubmitting }) => {
           console.log(values);
+          signIn(values.email, values.password);
+          setSubmitting(false);
         }}
       >
         {({
@@ -50,7 +51,8 @@ const LoginWithPassword = () => {
           handleSubmit,
           values,
           errors,
-          touched,
+          isSubmitting,
+          isValid,
         }) => (
           <View style={styles.formContainer}>
             <PayyngCustomField
@@ -98,6 +100,8 @@ const LoginWithPassword = () => {
                 buttonColor={Colors.greenColor}
                 buttonTextColor={Colors.white}
                 onPress={handleSubmit}
+                disabled={isLoading || !isValid}
+                isProcessing={isLoading || isSubmitting}
               />
             </View>
 

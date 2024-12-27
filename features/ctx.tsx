@@ -53,11 +53,11 @@ export function SessionProvider(props: React.PropsWithChildren) {
     <AuthContext.Provider
       value={{
         signIn: async (email: string, password: string) => {
+          console.log("reachhdhdh");
           setProcessing(true);
           //TODO: Add device token
           const payload = {
-            emailaddress: email,
-            deviceToken: "deviceToken",
+            email,
             password,
           };
           const res = await login(payload);

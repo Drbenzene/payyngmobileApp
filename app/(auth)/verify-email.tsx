@@ -110,16 +110,17 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: ms(30),
-    fontWeight: "bold",
     color: Colors.white,
     marginTop: vs(20),
     fontFamily: "payyng-bold",
   },
+
   subText: {
     color: Colors.white,
     fontSize: ms(16),
     textAlign: "left",
     marginTop: vs(10),
+    fontFamily: "payyng-semibold",
   },
   formContainer: {
     flex: 1,

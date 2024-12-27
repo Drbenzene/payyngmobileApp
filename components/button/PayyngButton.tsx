@@ -19,6 +19,7 @@ interface Props {
   marginTop?: any;
   borderWidth?: any;
   borderColor?: any;
+  isProcessing?: boolean;
 }
 
 const PayyngButton = ({
@@ -30,13 +31,9 @@ const PayyngButton = ({
   marginTop,
   borderWidth,
   borderColor,
+  isProcessing,
 }: Props) => {
   const [showIndicator, setShowIndicator] = useState(false);
-
-  const handlePress = () => {
-    setShowIndicator(true);
-    onPress();
-  };
 
   return (
     <View>
@@ -65,6 +62,7 @@ const PayyngButton = ({
             color: buttonTextColor,
           }}
         >
+          {isProcessing && <ActivityIndicator />}
           {buttonText}
         </Text>
         <MaterialIcons name="keyboard-arrow-right" size={27} color="#fff" />

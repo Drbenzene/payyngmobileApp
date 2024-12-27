@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "../utils/toast";
 
 import axios, { AxiosError } from "axios";
-const Base_URL = "https://paygees-api.azurewebsites.net/api";
+const Base_URL = "https://optimum-hornet-awfully.ngrok-free.app/api/v1/";
 // const Base_URL = "https://a86a-41-217-97-210.ngrok-free.app/api";
 
 export default async function APICall(
@@ -53,6 +53,22 @@ export default async function APICall(
       data: Data,
       // timeout: timeoutOverride || process.env.REACT_APP_REQUEST_TIMEOUT,
     });
+
+    console.log(response, "THE RESPONSE BACKK");
+    console.log(response.data.code, "the codeee");
+
+    console.log(response.data, "THE DATATAT");
+
+    Toast.error("faileldldldlld");
+
+    if (response?.data?.error) {
+      console.log(response?.data?.message, "THE ERROR MESSAGE");
+      const message =
+        response?.data?.message ||
+        "Something went wrong. please try again later ";
+      Toast.error(message);
+      return;
+    }
 
     if (
       Number(response.data.code) >= Number(400) &&

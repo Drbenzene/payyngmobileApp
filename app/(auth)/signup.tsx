@@ -23,7 +23,7 @@ const { width, height } = Dimensions.get("window");
 const Signup = () => {
   const { push, replace } = useRouter();
 
-  const loginHandler = async (values: any) => {
+  const signupHandler = async (values: any) => {
     const res = await register(values);
 
     if (res) {
@@ -54,18 +54,24 @@ const Signup = () => {
           initialValues={{
             email: "",
             password: "",
-            phone: "",
+            phoneNumber: "",
             referralCode: "",
           }}
           validationSchema={Yup.object({
             email: Yup.string()
               .email("Invalid email address")
               .required("Required"),
-            password: Yup.string().required("Required"),
+            phoneNumber: Yup.string().required("Required"),
+            password: Yup.string()
+              .required("Required")
+              .matches(
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                "Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number and 1 symbol"
+              ),
           })}
-          onSubmit={(values) => {
-            push("/(auth)/verify-email");
-            console.log(values);
+          onSubmit={async (values, { setSubmitting }) => {
+            await signupHandler(values);
+            setSubmitting(false);
           }}
         >
           {({
@@ -76,6 +82,8 @@ const Signup = () => {
             errors,
             touched,
             setValues,
+            isSubmitting,
+            isValid,
           }) => (
             <View style={styles.formContainer}>
               <PayyngCustomField
@@ -110,15 +118,15 @@ const Signup = () => {
               <PayyngCustomField
                 type="PHONE"
                 label="Phone Number"
-                id="password"
+                id="phoneNumber"
                 labelColor={Colors.white}
                 returnKeyType="next"
-                value={values.phone}
+                value={values.phoneNumber}
                 keyboardType="default"
-                placeholder="phone"
-                onChangeText={handleChange("phone")}
-                onBlur={handleBlur("phone")}
-                errorMessage={errors.phone}
+                placeholder="phoneNumber"
+                onChangeText={handleChange("phoneNumber")}
+                onBlur={handleBlur("phoneNumber")}
+                errorMessage={errors.phoneNumber}
                 placeholderTextColor={Colors.placeholderTextColor}
                 setValues={setValues}
                 values={values}
@@ -131,7 +139,7 @@ const Signup = () => {
                 value={values.referralCode}
                 labelColor={Colors.white}
                 keyboardType="default"
-                placeholder="Email"
+                placeholder="Enter Referral Code"
                 onChangeText={handleChange("referralCode")}
                 onBlur={handleBlur("referralCode")}
                 errorMessage={errors.referralCode}
@@ -144,6 +152,8 @@ const Signup = () => {
                   buttonColor={Colors.greenColor}
                   buttonTextColor={Colors.white}
                   onPress={handleSubmit}
+                  disabled={isSubmitting || !isValid}
+                  isProcessing={isSubmitting}
                 />
               </View>
 

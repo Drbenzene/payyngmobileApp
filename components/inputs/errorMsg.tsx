@@ -20,7 +20,7 @@ const ErrorMsg = ({ message }: IErrorProps) => {
         style={{
           textAlign: "left",
           color: "#FA5C47",
-          fontFamily: "payyng-regular",
+          fontFamily: "payyng-semibold",
           fontSize: Platform.OS === "ios" ? 15 : 14,
         }}
       >

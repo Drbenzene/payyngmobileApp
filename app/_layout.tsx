@@ -58,6 +58,8 @@ import {
   focusManager,
 } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
+import { useSession } from "@/features/ctx";
+import { SessionProvider } from "@/features/ctx";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -71,7 +73,6 @@ export const unstable_settings = {
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     // SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -105,17 +106,28 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const queryClient = new QueryClient();
 
+  const { session } = useSession();
+  console.log(session, "IN TAB");
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Toast />
-        <Stack>
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(pages)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-        </Stack>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <>
+      <SessionProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <Stack>
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(pages)" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+            </Stack>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </SessionProvider>
+      <Toast position="bottom" bottomOffset={20} />
+    </>
   );
 }
+
+//
