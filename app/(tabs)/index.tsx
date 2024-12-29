@@ -21,7 +21,7 @@ import { useSession } from "@/features/ctx";
 import { useWallet } from "@/hooks/useWallet";
 import { formatToCurrency } from "@/utils/helperFunc";
 import { currency } from "@/constants/currency";
-
+import { useTransactions } from "@/hooks/useTransaction";
 const { width } = Dimensions.get("window");
 
 const HomeScreen = () => {
@@ -31,10 +31,15 @@ const HomeScreen = () => {
     isRefetching,
     refetch: refetchWallet,
   } = useWallet();
+
+  const { data: transactions, isLoading: transactionLoading } =
+    useTransactions();
   const { push } = useRouter();
   const { session } = useSession();
 
   console.log(wallet, "my wallet");
+  console.log(transactions, "THE TRANSACIONSISISI");
+
   const currencyCards = [
     {
       id: 1,
