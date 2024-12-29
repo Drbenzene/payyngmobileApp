@@ -17,19 +17,25 @@ import PayyngButton from "@/components/button/PayyngButton";
 import AuthLayout from "@/components/Layouts/AuthLayout";
 import { register } from "@/hooks/useAuth";
 import { Toast } from "@/utils/toast";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSession } from "@/features/ctx";
 
 const { width, height } = Dimensions.get("window");
 
 const Signup = () => {
   const { push, replace } = useRouter();
 
-  const signupHandler = async (values: any) => {
-    const res = await register(values);
+  const { isLoading, createAccount } = useSession();
 
-    if (res) {
-      replace("/(auth)/verify-email");
-      Toast.success(`Welcome to Payyng`);
-    }
+  const signupHandler = async (values: any) => {
+    const res = createAccount(values);
+
+    console.log(res, "THE SIGNUP RESS");
+
+    // if (res) {
+    //   await AsyncStorage.setItem("token", res?.data?.accessToken);
+    //   replace("/(auth)/verify-email");
+    // }
   };
 
   return (
@@ -55,7 +61,7 @@ const Signup = () => {
             email: "",
             password: "",
             phoneNumber: "",
-            referralCode: "",
+            referrerCode: "",
           }}
           validationSchema={Yup.object({
             email: Yup.string()
@@ -134,15 +140,15 @@ const Signup = () => {
               <PayyngCustomField
                 type="INPUT"
                 label="Referral Code (Optional)"
-                id="referralCode"
+                id="referrerCode"
                 returnKeyType="next"
-                value={values.referralCode}
+                value={values.referrerCode}
                 labelColor={Colors.white}
                 keyboardType="default"
                 placeholder="Enter Referral Code"
-                onChangeText={handleChange("referralCode")}
-                onBlur={handleBlur("referralCode")}
-                errorMessage={errors.referralCode}
+                onChangeText={handleChange("referrerCode")}
+                onBlur={handleBlur("referrerCode")}
+                errorMessage={errors.referrerCode}
                 placeholderTextColor={Colors.placeholderTextColor}
               />
 
@@ -152,8 +158,8 @@ const Signup = () => {
                   buttonColor={Colors.greenColor}
                   buttonTextColor={Colors.white}
                   onPress={handleSubmit}
-                  disabled={isSubmitting || !isValid}
-                  isProcessing={isSubmitting}
+                  disabled={isSubmitting || !isValid || isLoading}
+                  isProcessing={isSubmitting || isLoading}
                 />
               </View>
 

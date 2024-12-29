@@ -52,3 +52,14 @@ export function getPercentage(currentPage: number, totalPage: number) {
   const percentageRead = (currentPage / totalPage) * 100;
   return percentageRead;
 }
+
+export function formatToCurrency(
+  value: number,
+  currency: string = "USD",
+  locale: string = "en-US"
+): string {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+  }).format(value || 0.0);
+}

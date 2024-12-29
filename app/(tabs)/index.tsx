@@ -1,81 +1,3 @@
-// import { Image, StyleSheet, Platform } from "react-native";
-
-// import { HelloWave } from "@/components/HelloWave";
-// import ParallaxScrollView from "@/components/ParallaxScrollView";
-// import { ThemedText } from "@/components/ThemedText";
-// import { ThemedView } from "@/components/ThemedView";
-
-// export default function HomeScreen() {
-//   return (
-//     <ParallaxScrollView
-//       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-//       headerImage={
-//         <Image
-//           source={require("@/assets/images/partial-react-logo.png")}
-//           style={styles.reactLogo}
-//         />
-//       }
-//     >
-//       <ThemedView style={styles.titleContainer}>
-//         <ThemedText type="title">Welcome!</ThemedText>
-//         <HelloWave />
-//       </ThemedView>
-//       <ThemedView style={styles.stepContainer}>
-//         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-//         <ThemedText>
-//           Edit{" "}
-//           <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-//           to see changes. Press{" "}
-//           <ThemedText type="defaultSemiBold">
-//             {Platform.select({
-//               ios: "cmd + d",
-//               android: "cmd + m",
-//               web: "F12",
-//             })}
-//           </ThemedText>{" "}
-//           to open developer tools.
-//         </ThemedText>
-//       </ThemedView>
-//       <ThemedView style={styles.stepContainer}>
-//         <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-//         <ThemedText>
-//           Tap the Explore tab to learn more about what's included in this
-//           starter app.
-//         </ThemedText>
-//       </ThemedView>
-//       <ThemedView style={styles.stepContainer}>
-//         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-//         <ThemedText>
-//           When you're ready, run{" "}
-//           <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{" "}
-//           to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-//           directory. This will move the current{" "}
-//           <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-//           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-//         </ThemedText>
-//       </ThemedView>
-//     </ParallaxScrollView>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   titleContainer: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     gap: 8,
-//   },
-//   stepContainer: {
-//     gap: 8,
-//     marginBottom: 8,
-//   },
-//   reactLogo: {
-//     height: 178,
-//     width: 290,
-//     bottom: 0,
-//     left: 0,
-//     position: "absolute",
-//   },
-// });
 import React from "react";
 import {
   Dimensions,
@@ -93,42 +15,70 @@ import { FontAwesome5, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { ms } from "react-native-size-matters";
 import Colors from "@/constants/Colors";
 import AppLayout from "@/components/Layouts/AppLayout";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useSession } from "@/features/ctx";
+import { useWallet } from "@/hooks/useWallet";
+import { formatToCurrency } from "@/utils/helperFunc";
+import { currency } from "@/constants/currency";
 
 const { width } = Dimensions.get("window");
 
 const HomeScreen = () => {
+  const {
+    data: wallet,
+    isLoading,
+    isRefetching,
+    refetch: refetchWallet,
+  } = useWallet();
   const { push } = useRouter();
+  const { session } = useSession();
+
+  console.log(wallet, "my wallet");
   const currencyCards = [
     {
       id: 1,
       currency: "NGN",
-      balance: "₦50,000.00",
-      accountNumber: "1234-5678-9101",
+      balance: `${formatToCurrency(
+        wallet?.NGN?.balance || 0.0,
+        currency.NGN,
+        "en-NG"
+      )}`,
+      accountNumber: `${wallet?.NGN?.accountNumber || ""}`,
       flag: "https://flagcdn.com/w320/ng.png",
     },
     {
       id: 2,
       currency: "USD",
-      balance: "$1,250.00",
-      accountNumber: "1234-5678-9101",
+      balance: `${formatToCurrency(
+        wallet?.USD?.balance || 0.0,
+        currency.USD,
+        "en-US"
+      )}`,
+      accountNumber: `${wallet?.USD?.accountNumber || ""}`,
       flag: "https://flagcdn.com/w320/us.png",
     },
     {
       id: 3,
       currency: "EUR",
-      balance: "€800.00",
-      accountNumber: "2234-5678-9101",
+      balance: `${formatToCurrency(
+        wallet?.EUR?.balance || 0.0,
+        currency.EUR,
+        "en-US"
+      )}`,
+      accountNumber: `${wallet?.EUR?.accountNumber || ""}`,
       flag: "https://flagcdn.com/w320/eu.png",
     },
     {
       id: 4,
-      currency: "NGN",
-      balance: "₦500,000.00",
-      accountNumber: "3234-5678-9101",
-      flag: "https://flagcdn.com/w320/ng.png",
+      currency: "GBP",
+      balance: `${formatToCurrency(
+        wallet?.GBP?.balance || 0.0,
+        currency.GBP,
+        "en-US"
+      )}`,
+      accountNumber: `${wallet?.GBP?.accountNumber || ""}`,
+      flag: "https://flagcdn.com/w320/gb.png",
     },
   ];
 
@@ -180,14 +130,22 @@ const HomeScreen = () => {
     <AppLayout>
       <StatusBar style="dark" />
       <RefreshControl
-        refreshing={false}
+        refreshing={isRefetching || isLoading}
         onRefresh={() => {
-          console.log("refreshing");
+          refetchWallet();
         }}
       >
         <ScrollView style={styles.container}>
-          <Animated.View style={{ opacity: fadeAnim }}>
-            <Text style={styles.headerText}>Welcome Back, User!</Text>
+          <Animated.View
+            style={
+              {
+                // opacity: fadeAnim
+              }
+            }
+          >
+            <Text style={styles.headerText}>
+              Welcome Back {`, ${session?.firstName}`}!
+            </Text>
 
             {/* Currency Cards */}
             <FlatList

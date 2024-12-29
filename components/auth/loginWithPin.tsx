@@ -11,10 +11,15 @@ import * as LocalAuthentication from "expo-local-authentication";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { ms } from "react-native-size-matters";
+import { useSession } from "@/features/ctx";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const LoginWithPin = () => {
-  const { push } = useRouter();
-
+interface LoginWithPinDTO {
+  setUsePin: any;
+}
+const LoginWithPin = ({ setUsePin }: LoginWithPinDTO) => {
+  const { replace, push } = useRouter();
+  const { signInWithPin, isLoading } = useSession();
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [authError, setAuthError] = useState("");
@@ -28,15 +33,19 @@ const LoginWithPin = () => {
     setPin((prev) => prev.slice(0, -1));
   };
 
-  const handleSubmit = () => {
-    if (pin.length === 4) {
-      console.log("PIN entered:", pin);
-      push("/(tabs)");
-
-      // Replace this with the actual login function
-    } else {
-      setError("Please enter a 4-digit PIN.");
+  const handleSubmit = async () => {
+    if (pin.length < 4) {
+      return setError("Please enter a 4-digit PIN.");
     }
+    const email = await AsyncStorage.getItem("email");
+    const payload = {
+      pin: Number(pin),
+      email,
+    };
+
+    console.log(payload, "THE PAYLOAD GOIINN");
+
+    signInWithPin(payload);
   };
 
   const handleFingerprintLogin = async () => {
@@ -126,11 +135,17 @@ const LoginWithPin = () => {
         onPress={handleSubmit}
         disabled={pin.length !== 4}
       >
-        <Text style={styles.submitText}>Login</Text>
+        <Text style={styles.submitText}>
+          {isLoading ? "Please wait..." : "Login"}
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.loginWithPasswordContainer}>
-        <Text onPress={handleFingerprintLogin}>
+        <Text
+          onPress={() => {
+            setUsePin(false);
+          }}
+        >
           <Text style={styles.loginWithPasswordText}>
             Proceed with Password
           </Text>
@@ -151,7 +166,6 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 32,
-    fontWeight: "bold",
     color: Colors.white,
     textAlign: "center",
     marginBottom: 10,
@@ -162,6 +176,7 @@ const styles = StyleSheet.create({
     color: Colors.placeholderTextColor,
     textAlign: "center",
     marginBottom: 30,
+    fontFamily: "payyng-semibold",
   },
   pinContainer: {
     flexDirection: "row",
@@ -219,6 +234,7 @@ const styles = StyleSheet.create({
   submitText: {
     fontSize: 18,
     color: Colors.white,
+    fontFamily: "payyng-semibold",
   },
   fingerprintButton: {
     height: 50,

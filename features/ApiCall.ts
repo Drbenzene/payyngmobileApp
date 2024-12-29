@@ -54,13 +54,6 @@ export default async function APICall(
       // timeout: timeoutOverride || process.env.REACT_APP_REQUEST_TIMEOUT,
     });
 
-    console.log(response, "THE RESPONSE BACKK");
-    console.log(response.data.code, "the codeee");
-
-    console.log(response.data, "THE DATATAT");
-
-    Toast.error("faileldldldlld");
-
     if (response?.data?.error) {
       console.log(response?.data?.message, "THE ERROR MESSAGE");
       const message =
@@ -69,21 +62,11 @@ export default async function APICall(
       Toast.error(message);
       return;
     }
-
-    if (
-      Number(response.data.code) >= Number(400) &&
-      Number(response.data.code) < Number(500)
-    ) {
-      Toast.error(
-        response?.data?.message ||
-          " We are unable to process your request. Please try again"
-      );
-      Toast.error(
-        response?.data?.message ||
-          " We are unable to process your request. Please try again"
-      );
-      return;
+    if (!response?.data) {
+      Toast.error("Something went wrong on our end. Please try again later ");
     }
+
+    console.log(response, "THE RESPONSE ");
 
     const parsedRes = JSON.parse(JSON.stringify(response?.data));
     return (

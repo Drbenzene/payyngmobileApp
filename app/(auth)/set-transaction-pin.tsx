@@ -10,10 +10,23 @@ import PayyngButton from "@/components/button/PayyngButton";
 import PayyngOTPField from "@/components/inputs/PayyngOTPField";
 import { useRouter } from "expo-router";
 import Colors from "@/constants/Colors";
-import PayyngCustomField from "@/components/inputs/PayyngCustomField";
+import { setPin } from "@/hooks/useAuth";
+import { Toast } from "@/utils/toast";
 
 const SetTransactionPin = () => {
-  const { push } = useRouter();
+  const { replace } = useRouter();
+
+  const setTransactionPinHandler = async (values: any) => {
+    const payload = {
+      pin: Number(values.pin),
+    };
+    const res = await setPin(payload);
+
+    if (res) {
+      replace("/(tabs)");
+    }
+  };
+
   return (
     <AuthLayout>
       <StatusBar style="dark" />
@@ -26,23 +39,21 @@ const SetTransactionPin = () => {
       />
       <View style={styles.container}>
         <View>
-          <Text style={styles.headerText}>Set Transaction Pin</Text>
+          <Text style={styles.headerText}> Transaction Pin</Text>
           <Text style={styles.subText}>
             Enter your 4 digits Transaction pin to secure your account
           </Text>
         </View>
         <Formik
           initialValues={{
-            otp: "",
-            password: "",
-            confirmPassword: "",
+            pin: "",
           }}
           validationSchema={Yup.object({
-            otp: Yup.string().required("Required"),
+            pin: Yup.string().required("Required"),
           })}
-          onSubmit={(values) => {
-            push("/(tabs)");
-            console.log(values);
+          onSubmit={async (values, { setSubmitting }) => {
+            await setTransactionPinHandler(values);
+            setSubmitting(false);
           }}
         >
           {({
@@ -52,13 +63,19 @@ const SetTransactionPin = () => {
             values,
             errors,
             touched,
+            isSubmitting,
+            isValid,
           }) => (
             <View style={styles.formContainer}>
-              <PayyngOTPField digits={4} onChange={handleChange("otp")} />
+              <PayyngOTPField
+                hideValue={true}
+                digits={4}
+                onChange={handleChange("pin")}
+              />
 
               <View
                 style={{
-                  marginTop: vs(20),
+                  marginTop: vs(60),
                 }}
               >
                 <PayyngButton
@@ -66,19 +83,10 @@ const SetTransactionPin = () => {
                   buttonText={"PROCEED"}
                   buttonColor={Colors.greenColor}
                   buttonTextColor={Colors.white}
+                  isProcessing={isSubmitting}
+                  disabled={isSubmitting || !isValid}
                 />
               </View>
-
-              <TouchableOpacity
-                onPress={() => {
-                  push("/(auth)/login");
-                }}
-              >
-                <Text style={styles.backToLogin}>
-                  Remember Now?{" "}
-                  <Text style={{ color: Colors.white }}>Back to Login</Text>
-                </Text>
-              </TouchableOpacity>
             </View>
           )}
         </Formik>
@@ -97,16 +105,17 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: ms(40),
-    fontWeight: "bold",
     color: Colors.white,
     marginTop: vs(20),
+    textAlign: "center",
     fontFamily: "payyng-bold",
   },
   subText: {
     color: Colors.white,
     fontSize: ms(16),
-    textAlign: "left",
+    textAlign: "center",
     marginTop: vs(10),
+    fontFamily: "payyng-semibold",
   },
   formContainer: {
     flex: 1,
@@ -115,12 +124,5 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: vs(20),
-  },
-
-  backToLogin: {
-    color: Colors.white,
-    textAlign: "center",
-    marginTop: vs(20),
-    fontFamily: "payyng-bold",
   },
 });

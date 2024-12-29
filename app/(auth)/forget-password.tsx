@@ -17,9 +17,21 @@ import PayyngButton from "@/components/button/PayyngButton";
 import AuthLayout from "@/components/Layouts/AuthLayout";
 import { useRouter } from "expo-router";
 const { width, height } = Dimensions.get("window");
-
+import { passwordForget } from "@/hooks/useAuth";
+import { Toast } from "@/utils/toast";
 const ForgetPassword = () => {
   const { push } = useRouter();
+
+  const forgetPasswordHandler = async (values: any) => {
+    const res = await passwordForget(values);
+    if (res) {
+      Toast.success(
+        "An Email will be sent to your email if the account exist. "
+      );
+      push("/(auth)/validate-otp-forget-password");
+    }
+  };
+
   return (
     <AuthLayout>
       <StatusBar style="dark" />
@@ -42,11 +54,15 @@ const ForgetPassword = () => {
           initialValues={{
             email: "",
           }}
-          // validationSchema={Yup.object({
-          //   email: Yup.string().email("Invalid email address"),
-          // })}
-          onSubmit={(values) => {
-            console.log(values);
+          validationSchema={Yup.object({
+            email: Yup.string()
+              .email("Invalid email address")
+              .required("Email is required"),
+          })}
+          onSubmit={async (values, { setSubmitting }) => {
+            console.log("reacheddhdd");
+            await forgetPasswordHandler(values);
+            setSubmitting(false);
           }}
         >
           {({
@@ -54,8 +70,9 @@ const ForgetPassword = () => {
             handleBlur,
             handleSubmit,
             values,
+            isValid,
+            isSubmitting,
             errors,
-            touched,
           }) => (
             <View style={styles.formContainer}>
               <PayyngCustomField
@@ -78,9 +95,9 @@ const ForgetPassword = () => {
                   buttonText="PROCEED"
                   buttonColor={Colors.newPrimaryColor}
                   buttonTextColor={Colors.white}
-                  onPress={() => {
-                    push("/(auth)/validate-otp-forget-password");
-                  }}
+                  onPress={handleSubmit}
+                  disabled={isSubmitting || !isValid}
+                  isProcessing={isSubmitting}
                 />
 
                 <TouchableOpacity
@@ -117,7 +134,6 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: ms(40),
-    fontWeight: "bold",
     color: Colors.white,
     marginTop: vs(20),
     fontFamily: "payyng-bold",
@@ -127,6 +143,7 @@ const styles = StyleSheet.create({
     fontSize: ms(16),
     textAlign: "left",
     marginTop: vs(10),
+    fontFamily: "payyng-semibold",
   },
   formContainer: {
     flex: 1,

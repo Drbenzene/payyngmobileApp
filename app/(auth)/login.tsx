@@ -1,13 +1,34 @@
 import { StyleSheet, SafeAreaView } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import LoginWithPin from "@/components/auth/loginWithPin";
 import LoginWithPassword from "@/components/auth/LoginWithPassword";
-import { vs, s, ms } from "react-native-size-matters";
-import { Stack, useRouter } from "expo-router";
+import { vs, ms } from "react-native-size-matters";
+import { Stack } from "expo-router";
 import AuthLayout from "@/components/Layouts/AuthLayout";
 import { StatusBar } from "expo-status-bar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = () => {
+  const [usePin, setUsePin] = useState<any>(null);
+
+  useEffect(() => {
+    const getIsUserAlreadyLoggedIn = async () => {
+      try {
+        const userEmail = await AsyncStorage.getItem("email");
+        setUsePin(!!userEmail);
+      } catch (error) {
+        console.error("Error reading email from AsyncStorage:", error);
+        setUsePin(false);
+      }
+    };
+    getIsUserAlreadyLoggedIn();
+  }, []);
+
+  // Show a loader or empty screen while determining the state
+  if (usePin === null) {
+    return null; // Render nothing while loading; optionally add a loader component
+  }
+
   return (
     <AuthLayout>
       <StatusBar style="dark" />
@@ -19,8 +40,11 @@ const Login = () => {
         }}
       />
       <SafeAreaView style={styles.container}>
-        {/* <LoginWithPin /> */}
-        <LoginWithPassword />
+        {usePin ? (
+          <LoginWithPin setUsePin={setUsePin} />
+        ) : (
+          <LoginWithPassword />
+        )}
       </SafeAreaView>
     </AuthLayout>
   );

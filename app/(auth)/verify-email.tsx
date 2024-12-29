@@ -17,9 +17,27 @@ import AuthLayout from "@/components/Layouts/AuthLayout";
 import { useRouter } from "expo-router";
 import PayyngOTPField from "@/components/inputs/PayyngOTPField";
 const { width, height } = Dimensions.get("window");
+import { verifyEmail, resendEmail } from "@/hooks/useAuth";
+import { Toast } from "@/utils/toast";
 
 const VerifyEmail = () => {
-  const { push } = useRouter();
+  const { push, replace } = useRouter();
+  const handleEmailVerification = async (values: any) => {
+    const payload = {
+      code: values.otp,
+    };
+    const res = await verifyEmail(payload);
+    if (res) {
+      replace("/(auth)/set-transaction-pin");
+    }
+  };
+
+  const resendEmailVerificationHandler = async (values: any) => {
+    const res = await resendEmail();
+    if (res) {
+      Toast.success("Email Resent Successfully");
+    }
+  };
   return (
     <AuthLayout>
       <StatusBar style="dark" />
@@ -34,40 +52,27 @@ const VerifyEmail = () => {
         <View>
           <Text style={styles.headerText}>One More Step ✈️</Text>
           <Text style={styles.subText}>
-            Enter the 6 digits OTP code sent to verify your email and continue
+            Enter the 4 digits OTP code sent to verify your email and continue
             enjoying Payyng{" "}
           </Text>
         </View>
         <Formik
           initialValues={{
-            email: "",
-            password: "",
+            otp: "",
           }}
-          // validationSchema={Yup.object({
-          //   email: Yup.string()
-          //     .email("Invalid email address")
-          //     .required("Required"),
-          // })}
-          onSubmit={(values) => {
-            push("/(auth)/set-transaction-pin");
-            console.log(values);
+          onSubmit={async (values, { setSubmitting }) => {
+            await handleEmailVerification(values);
+            setSubmitting(false);
           }}
         >
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            errors,
-            touched,
-          }) => (
+          {({ handleChange, isSubmitting, isValid, handleSubmit }) => (
             <View style={styles.formContainer}>
               <View
                 style={{
                   marginVertical: vs(20),
                 }}
               >
-                <PayyngOTPField digits={6} onChange={handleChange("otp")} />
+                <PayyngOTPField digits={4} onChange={handleChange("otp")} />
               </View>
 
               <View style={styles.buttonAndIndicatorContainer}>
@@ -76,15 +81,19 @@ const VerifyEmail = () => {
                   buttonColor={Colors.greenColor}
                   buttonTextColor={Colors.white}
                   onPress={handleSubmit}
+                  disabled={isSubmitting || !isValid}
+                  isProcessing={isSubmitting}
                 />
                 <TouchableOpacity
                   onPress={() => {
                     push("/(auth)/login");
                   }}
                 >
-                  <Text style={styles.resendOtp}>
-                    Resend <Text style={{ color: Colors.white }}>OTP</Text>
-                  </Text>
+                  <TouchableOpacity onPress={resendEmailVerificationHandler}>
+                    <Text style={styles.resendOtp}>
+                      Resend <Text style={{ color: Colors.white }}>OTP</Text>
+                    </Text>
+                  </TouchableOpacity>
                 </TouchableOpacity>
               </View>
             </View>

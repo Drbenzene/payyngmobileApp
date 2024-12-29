@@ -11,8 +11,25 @@ import PayyngOTPField from "@/components/inputs/PayyngOTPField";
 import { useRouter } from "expo-router";
 import Colors from "@/constants/Colors";
 import PayyngCustomField from "@/components/inputs/PayyngCustomField";
+import { resetPassword } from "@/hooks/useAuth";
+import { Toast } from "@/utils/toast";
+
 const ValidateForgetPasswordOtp = () => {
-  const { push } = useRouter();
+  const { replace, push } = useRouter();
+
+  const resetPasswordHandler = async (values: any) => {
+    const payload = {
+      ...values,
+      code: values.otp,
+    };
+    const res = await resetPassword(payload);
+    if (res) {
+      Toast.success("Password reset successfully");
+      replace("/(auth)/login");
+    } else {
+      replace("/(auth)/login");
+    }
+  };
   return (
     <AuthLayout>
       <StatusBar style="dark" />
@@ -30,11 +47,16 @@ const ValidateForgetPasswordOtp = () => {
             password: "",
             confirmPassword: "",
           }}
-          // validationSchema={Yup.object({
-          //   otp: Yup.string().required("Required"),
-          // })}
-          onSubmit={(values) => {
-            console.log(values);
+          validationSchema={Yup.object({
+            otp: Yup.string().required("Required"),
+            password: Yup.string().required("Password is required"),
+            confirmPassword: Yup.string().required(
+              "Confirm Password is required"
+            ),
+          })}
+          onSubmit={async (values, { setSubmitting }) => {
+            await resetPasswordHandler(values);
+            setSubmitting(false);
           }}
         >
           {({
@@ -43,14 +65,15 @@ const ValidateForgetPasswordOtp = () => {
             handleSubmit,
             values,
             errors,
-            touched,
+            isSubmitting,
+            isValid,
           }) => (
             <>
               <View>
-                <Text style={styles.headerText}>Forget Password</Text>
+                <Text style={styles.headerText}>Reset Password</Text>
                 {values.otp?.length < 4 && (
                   <Text style={styles.subText}>
-                    Enter the 6 digits OTP code sent to your email to reset your
+                    Enter the 4 digits OTP code sent to your email to reset your
                     password
                   </Text>
                 )}
@@ -114,6 +137,8 @@ const ValidateForgetPasswordOtp = () => {
                           buttonText={"PROCEED"}
                           buttonColor={Colors.greenColor}
                           buttonTextColor={Colors.white}
+                          isProcessing={isSubmitting}
+                          disabled={isSubmitting || !isValid}
                         />
                       </View>
 
@@ -151,7 +176,6 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: ms(40),
-    fontWeight: "bold",
     color: Colors.white,
     marginTop: vs(20),
     fontFamily: "payyng-bold",
@@ -161,6 +185,7 @@ const styles = StyleSheet.create({
     fontSize: ms(16),
     textAlign: "left",
     marginTop: vs(10),
+    fontFamily: "payyng-semibold",
   },
   formContainer: {
     flex: 1,

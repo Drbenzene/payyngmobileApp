@@ -3,14 +3,18 @@ import { OtpInput } from "react-native-otp-entry";
 import React from "react";
 import Colors from "@/constants/Colors";
 import { vs, s, ms } from "react-native-size-matters";
-const { width, height } = Dimensions.get("window");
 
 interface PayyngOTPFieldProps {
   digits: number;
   onChange: any;
+  hideValue?: boolean;
 }
 
-const PayyngOTPField = ({ digits, onChange }: PayyngOTPFieldProps) => {
+const PayyngOTPField = ({
+  digits,
+  onChange,
+  hideValue,
+}: PayyngOTPFieldProps) => {
   return (
     <View>
       <OtpInput
@@ -20,6 +24,8 @@ const PayyngOTPField = ({ digits, onChange }: PayyngOTPFieldProps) => {
         focusStickBlinkingDuration={500}
         numberOfDigits={digits}
         onTextChange={onChange}
+        hideStick={true}
+        secureTextEntry={hideValue}
         theme={{
           //   containerStyle: styles.container,
           pinCodeContainerStyle: styles.pinCodeContainer,

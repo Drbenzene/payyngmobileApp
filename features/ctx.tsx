@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useStorageState } from "./useStorageState";
 // import authService from "./actions/authAction";
-import { login, register } from "@/hooks/useAuth";
-import { router } from "expo-router";
+import { login, loginWithPin, register } from "@/hooks/useAuth";
+import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AuthContext = React.createContext<{
   signIn: (email: string, password: string) => void;
-  signInWithPin: () => void;
+  signInWithPin: (values: any) => void;
   createAccount: (values: any) => void;
   signOut: () => void;
   session?: any | null;
@@ -49,11 +49,12 @@ export function SessionProvider(props: React.PropsWithChildren) {
     fetchIsFirstTime();
   }, []);
 
+  const { replace } = useRouter();
+
   return (
     <AuthContext.Provider
       value={{
         signIn: async (email: string, password: string) => {
-          console.log("reachhdhdh");
           setProcessing(true);
           //TODO: Add device token
           const payload = {
@@ -63,8 +64,10 @@ export function SessionProvider(props: React.PropsWithChildren) {
           const res = await login(payload);
           setProcessing(false);
 
+          console.log(res, "the login resss");
+
           if (res) {
-            setSession(res.data);
+            setSession(res.data?.user);
 
             if (
               res?.data?.status === "User Created, Pending Email Verification"
@@ -72,29 +75,47 @@ export function SessionProvider(props: React.PropsWithChildren) {
               //   router.replace("/auth/enter-code");
               return;
             }
-            await AsyncStorage.setItem("name", res.data.name);
             await AsyncStorage.setItem("token", res.data.token);
             await AsyncStorage.setItem("email", email);
-            await AsyncStorage.setItem("password", password);
-            // router.replace("/home");
+            replace("/(tabs)");
           }
         },
         signOut: () => {
           setSession(null);
-          //   router.push("/auth/login");
+          replace("/(auth)/login");
         },
 
         createAccount: async (values: any) => {
           setProcessing(true);
           const res = await register(values);
           setProcessing(false);
+          console.log(res, "THE SIGN UP RESS");
           if (res) {
-            await AsyncStorage.setItem("token", res.data.token);
-            await AsyncStorage.setItem("email", values.emailaddress);
-            // router.push("/auth/enter-code");
+            await AsyncStorage.setItem("token", res.data.accessToken);
+            setSession(res?.data?.user);
+            replace("/(auth)/verify-email");
           }
         },
-        signInWithPin: () => {},
+        signInWithPin: async (payload: any) => {
+          setProcessing(true);
+
+          const res = await loginWithPin(payload);
+          setProcessing(false);
+
+          if (res) {
+            setSession(res.data?.user);
+
+            if (
+              res?.data?.status === "User Created, Pending Email Verification"
+            ) {
+              //   router.replace("/auth/enter-code");
+              return;
+            }
+            await AsyncStorage.setItem("token", res.data.token);
+            await AsyncStorage.setItem("email", payload.email);
+            replace("/(tabs)");
+          }
+        },
 
         session,
         isLoading: processing,
