@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -23,8 +23,12 @@ import { formatToCurrency } from "@/utils/helperFunc";
 import { currency } from "@/constants/currency";
 import { useTransactions } from "@/hooks/useTransaction";
 const { width } = Dimensions.get("window");
+import VerifyBVNModal from "@/components/modals/verifyBVNModal";
+import PayyngCustomField from "@/components/inputs/PayyngCustomField";
 
 const HomeScreen = () => {
+  const [openVerifyBVN, setOpenVerifyBVN] = useState(true);
+
   const {
     data: wallet,
     isLoading,
@@ -32,8 +36,12 @@ const HomeScreen = () => {
     refetch: refetchWallet,
   } = useWallet();
 
-  const { data: transactions, isLoading: transactionLoading } =
-    useTransactions();
+  const {
+    data: transactions,
+    isLoading: transactionLoading,
+    refetch: refetchTransaction,
+    isFetching: transactionRefreshing,
+  } = useTransactions();
   const { push } = useRouter();
   const { session } = useSession();
 
@@ -135,9 +143,10 @@ const HomeScreen = () => {
     <AppLayout>
       <StatusBar style="dark" />
       <RefreshControl
-        refreshing={isRefetching || isLoading}
+        refreshing={isRefetching || isLoading || transactionRefreshing}
         onRefresh={() => {
           refetchWallet();
+          refetchTransaction();
         }}
       >
         <ScrollView style={styles.container}>
@@ -264,6 +273,13 @@ const HomeScreen = () => {
           </Animated.View>
         </ScrollView>
       </RefreshControl>
+
+      <VerifyBVNModal
+        open={openVerifyBVN}
+        setIsOpen={() => {
+          setOpenVerifyBVN(false);
+        }}
+      />
     </AppLayout>
   );
 };
