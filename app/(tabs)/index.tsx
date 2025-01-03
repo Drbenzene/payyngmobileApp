@@ -24,10 +24,17 @@ import { currency } from "@/constants/currency";
 import { useTransactions } from "@/hooks/useTransaction";
 const { width } = Dimensions.get("window");
 import VerifyBVNModal from "@/components/modals/verifyBVNModal";
-import PayyngCustomField from "@/components/inputs/PayyngCustomField";
+import CreateDollarCard from "@/components/modals/createDollarCard";
+import { create } from "react-test-renderer";
 
 const HomeScreen = () => {
-  const [openVerifyBVN, setOpenVerifyBVN] = useState(true);
+  const { session } = useSession();
+
+  console.log(session, "my session");
+  const [openVerifyBVN, setOpenVerifyBVN] = useState(
+    session?.bvnVerified === false ? true : false
+  );
+  const [openCreateCard, setOpenCreateCard] = useState(false);
 
   const {
     data: wallet,
@@ -43,10 +50,18 @@ const HomeScreen = () => {
     isFetching: transactionRefreshing,
   } = useTransactions();
   const { push } = useRouter();
-  const { session } = useSession();
 
   console.log(wallet, "my wallet");
   console.log(transactions, "THE TRANSACIONSISISI");
+
+  const quickAccess = [
+    { id: 1, name: "", icon: "send" },
+    { id: 2, name: "Airtime", icon: "phone" },
+    { id: 3, name: "Data", icon: "wifi" },
+    { id: 4, name: "Electricity", icon: "bolt" },
+    { id: 5, name: "Remita Payments", icon: "file-invoice" },
+    { id: 6, name: "Water Bill", icon: "tint" },
+  ];
 
   const currencyCards = [
     {
@@ -139,6 +154,17 @@ const HomeScreen = () => {
     }).start();
   }, []);
 
+  const createCardHandler = () => {
+    if (session?.tier === 0) {
+      return setOpenVerifyBVN(true);
+    }
+    if (session?.tier === 1) {
+      //OPEN THE ID VERIFICATION FLOW
+      return setOpenCreateCard(true);
+    }
+    // if()
+  };
+
   return (
     <AppLayout>
       <StatusBar style="dark" />
@@ -160,7 +186,6 @@ const HomeScreen = () => {
             <Text style={styles.headerText}>
               Welcome Back {`, ${session?.firstName}`}!
             </Text>
-
             {/* Currency Cards */}
             <FlatList
               data={currencyCards}
@@ -207,7 +232,6 @@ const HomeScreen = () => {
                 </View>
               )}
             />
-
             {/* Bills Section */}
             <Text style={styles.sectionHeader}>Pay Your Bills</Text>
             <View style={styles.billsContainer}>
@@ -228,7 +252,6 @@ const HomeScreen = () => {
                 </TouchableOpacity>
               ))}
             </View>
-
             {/* Recent Transactions */}
             <Text style={styles.sectionHeader}>Recent Transactions</Text>
             {recentTransactions.map((transaction) => (
@@ -241,17 +264,43 @@ const HomeScreen = () => {
               </View>
             ))}
 
-            {/* Dollar Card */}
-            <View style={styles.dollarCardSection}>
-              <Text style={styles.sectionHeader}>Create a Dollar Card</Text>
-              <Text style={styles.dollarCardText}>
-                Generate a virtual dollar card for online purchases.
-              </Text>
-              <TouchableOpacity style={styles.createCardButton}>
-                <Text style={styles.createCardText}>Create Now</Text>
-              </TouchableOpacity>
-            </View>
-
+            <Animated.View>
+              {/* Dollar Card Section */}
+              <View style={styles.dollarCardSection}>
+                <Text style={styles.sectionHeader}>Create A Dollar Card</Text>
+                <Text style={styles.dollarCardText}>
+                  Generate a virtual dollar card for online purchases.
+                </Text>
+                {/* Mock Dollar Card Design */}
+                <View style={styles.mockDollarCard}>
+                  <Text style={styles.mockCardBankName}>Payyng Bank</Text>
+                  <View style={styles.cardChipContainer}>
+                    <View style={styles.cardChip} />
+                  </View>
+                  <Text style={styles.mockCardNumber}>**** **** **** 1234</Text>
+                  <View style={styles.cardDetailsContainer}>
+                    <View>
+                      <Text style={styles.cardDetailLabel}>CARD HOLDER</Text>
+                      <Text style={styles.cardDetailValue}>
+                        {session?.firstName
+                          ? `${session?.firstName} ${session?.lastName}`
+                          : "John Doe"}
+                      </Text>
+                    </View>
+                    <View>
+                      <Text style={styles.cardDetailLabel}>EXPIRY</Text>
+                      <Text style={styles.cardDetailValue}>12/28</Text>
+                    </View>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  style={styles.createCardButton}
+                  onPress={() => setOpenCreateCard(true)}
+                >
+                  <Text style={styles.createCardText}>Create Card</Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
             {/* Blog Section */}
             <Text style={styles.sectionHeader}>Stay Informed</Text>
             <FlatList
@@ -279,6 +328,15 @@ const HomeScreen = () => {
           open={openVerifyBVN}
           setIsOpen={() => {
             setOpenVerifyBVN(false);
+          }}
+        />
+      )}
+
+      {openCreateCard && (
+        <CreateDollarCard
+          open={openCreateCard}
+          setIsOpen={() => {
+            setOpenCreateCard(false);
           }}
         />
       )}
@@ -363,6 +421,7 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     color: Colors.white,
     fontFamily: "payyng-bold",
+    textAlign: "left",
   },
   billsContainer: {
     flexDirection: "row",
@@ -415,17 +474,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     marginBottom: 16,
+    color: Colors.white,
+    fontFamily: "payyng-semibold",
   },
-  createCardButton: {
-    backgroundColor: Colors.greenColor,
-    padding: 12,
-    borderRadius: 8,
-  },
-  createCardText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
+
   blogCard: {
     backgroundColor: "#fff",
     borderRadius: 12,
@@ -452,5 +504,63 @@ const styles = StyleSheet.create({
   blogDescription: {
     fontSize: 14,
     color: "#666",
+  },
+
+  mockDollarCard: {
+    width: "100%",
+    backgroundColor: Colors?.greenColor,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  mockCardBankName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 16,
+  },
+  cardChipContainer: {
+    alignItems: "flex-start",
+    marginBottom: 16,
+  },
+  cardChip: {
+    width: 40,
+    height: 30,
+    backgroundColor: Colors.white,
+    borderRadius: 4,
+  },
+  mockCardNumber: {
+    fontSize: 18,
+    letterSpacing: 2,
+    color: "#fff",
+    marginBottom: 16,
+  },
+  cardDetailsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  cardDetailLabel: {
+    fontSize: 12,
+    color: "#B0C4DE",
+  },
+  cardDetailValue: {
+    fontSize: 14,
+    color: "#fff",
+  },
+  createCardButton: {
+    backgroundColor: Colors.greenColor,
+    padding: 12,
+    borderRadius: 8,
+  },
+  createCardText: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "payyng-semibold",
+    textAlign: "center",
   },
 });

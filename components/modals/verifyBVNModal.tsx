@@ -17,6 +17,7 @@ const VerifyBVNModal = ({ open, setIsOpen }: VerifyBVNDTO) => {
   const validateBVNHandler = async (values: any) => {
     console.log(values);
   };
+
   return (
     <ModalLayout modalVisible={open} closeModal={setIsOpen} height={70}>
       <View>
@@ -106,7 +107,7 @@ const VerifyBVNModal = ({ open, setIsOpen }: VerifyBVNDTO) => {
                   onPress={() => {
                     // router.push("/login");
                   }}
-                />{" "}
+                />
               </View>
             </View>
           )}

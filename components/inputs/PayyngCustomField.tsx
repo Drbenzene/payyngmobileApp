@@ -189,6 +189,7 @@ const PayyngCustomField = ({
         {type === "CURRENCY" && (
           <CurrencyInput
             value={value}
+            placeholder={placeholder}
             onChangeValue={(val) => {
               console.log(val, "YEYEYEYEY");
               console.log(id, "THE ID");
@@ -198,7 +199,7 @@ const PayyngCustomField = ({
               });
               // setValues(val);
             }}
-            prefix={currency}
+            prefix={`${currency} `}
             delimiter=","
             separator="."
             precision={2}

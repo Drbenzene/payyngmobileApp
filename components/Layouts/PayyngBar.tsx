@@ -3,6 +3,7 @@ import React from "react";
 import colors from "../../constants/Colors";
 import { Image } from "expo-image";
 import { ms, scale, verticalScale } from "react-native-size-matters";
+
 interface Props {
   title: string;
   imageRight: any;
@@ -36,20 +37,22 @@ export default function PayyngBar({
         alignItems: "center",
         // backgroundColor: colors.black,
         paddingVertical: 10,
-        paddingHorizontal: 20,
+        // paddingHorizontal: 20,
         paddingTop: ms(20),
         backgroundColor: colors.black,
       }}
     >
       <TouchableOpacity onPress={onPressLeft}>
         <Image
-          contentFit="contain"
-          source={imageLeft}
+          // contentFit="contain"
+          source={imageLeft || require("../../assets/images/back_2.png")}
           style={{
-            height: verticalScale(heightLeft),
-            width: scale(widthLeft),
+            height: verticalScale(heightLeft || 30),
+            width: scale(widthLeft || 30),
           }}
         />
+
+        {/* <Text>Back</Text> */}
       </TouchableOpacity>
       <Text
         style={{
