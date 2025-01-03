@@ -13,6 +13,7 @@ interface Props {
   onPressLeft: any;
   onPressRight: any;
   imageLeft?: any;
+  titleColor?: string;
 }
 
 export default function PayyngBar({
@@ -25,6 +26,7 @@ export default function PayyngBar({
   widthRight,
   onPressLeft,
   onPressRight,
+  titleColor,
 }: Props) {
   return (
     <View
@@ -53,7 +55,7 @@ export default function PayyngBar({
         style={{
           fontSize: scale(20),
           fontFamily: "payyng-bold",
-          color: colors.greenColor,
+          color: titleColor || colors.greenColor,
         }}
       >
         {title}

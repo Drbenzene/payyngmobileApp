@@ -49,7 +49,6 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import Onboarding from "./(auth)/onboarding";
 // import "../global.css"
 import { useColorScheme } from "@/components/useColorScheme";
 import {
@@ -60,6 +59,8 @@ import {
 import Toast from "react-native-toast-message";
 import { useSession } from "@/features/ctx";
 import { SessionProvider } from "@/features/ctx";
+import LoadingOverlay from "@/components/loader/Loading";
+import { LoadingProvider } from "@/components/Layouts/LoadingContext";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -111,23 +112,26 @@ function RootLayoutNav() {
 
   return (
     <>
-      <SessionProvider>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
-            <Stack>
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="(pages)" options={{ headerShown: false }} />
-              <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-            </Stack>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </SessionProvider>
+      <LoadingProvider>
+        <SessionProvider>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <Stack>
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="(pages)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="modal"
+                  options={{ presentation: "modal" }}
+                />
+              </Stack>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </SessionProvider>
+      </LoadingProvider>
       <Toast position="bottom" bottomOffset={20} />
     </>
   );
 }
-
-//

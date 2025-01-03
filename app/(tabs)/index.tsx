@@ -274,12 +274,14 @@ const HomeScreen = () => {
         </ScrollView>
       </RefreshControl>
 
-      <VerifyBVNModal
-        open={openVerifyBVN}
-        setIsOpen={() => {
-          setOpenVerifyBVN(false);
-        }}
-      />
+      {openVerifyBVN && (
+        <VerifyBVNModal
+          open={openVerifyBVN}
+          setIsOpen={() => {
+            setOpenVerifyBVN(false);
+          }}
+        />
+      )}
     </AppLayout>
   );
 };

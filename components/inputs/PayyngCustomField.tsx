@@ -13,6 +13,7 @@ import colors from "../../constants/Colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import PhoneInput from "react-native-phone-input";
 import CurrencyInput from "react-native-currency-input";
+import DropDownPicker from "react-native-dropdown-picker";
 
 interface PayyngCustomFieldProps {
   type:
@@ -69,6 +70,7 @@ const PayyngCustomField = ({
   currency,
 }: PayyngCustomFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [open, setOpen] = useState(false);
   // const [amountValue, setAmountValue] = useState<any>();
 
   return (
@@ -205,6 +207,103 @@ const PayyngCustomField = ({
             showPositiveSign={false}
             onChangeText={(formattedValue) => {
               console.log(formattedValue, "the formatted valye"); // R$ +2.310,46
+            }}
+          />
+        )}
+
+        {type === "SELECT" && (
+          <DropDownPicker
+            open={open}
+            value={value}
+            items={[
+              {
+                label: "UK",
+                value: "uk",
+              },
+              {
+                label: "France",
+                value: "france",
+              },
+              {
+                label: "Germany",
+                value: "germany",
+              },
+              {
+                label: "UK",
+                value: "uk",
+              },
+              {
+                label: "France",
+                value: "france",
+              },
+              {
+                label: "Germany",
+                value: "germany",
+              },
+              {
+                label: "UK",
+                value: "uk",
+              },
+              {
+                label: "France",
+                value: "france",
+              },
+              {
+                label: "Germany",
+                value: "germany",
+              },
+              {
+                label: "UK",
+                value: "uk",
+              },
+              {
+                label: "France",
+                value: "france",
+              },
+              {
+                label: "Germany",
+                value: "germany",
+              },
+              {
+                label: "UK",
+                value: "uk",
+              },
+              {
+                label: "France",
+                value: "france",
+              },
+              {
+                label: "Germany",
+                value: "germany",
+              },
+            ]}
+            setOpen={setOpen}
+            setValue={onChangeText}
+            containerStyle={{
+              marginBottom: 10,
+              borderRadius: 0,
+              width: "100%",
+              height: "100%",
+            }}
+            style={{
+              borderWidth: 0, // Remove borders
+              backgroundColor: "transparent", // Ensure background is transparent
+              shadowColor: "transparent", // Remove shadows
+            }}
+            // dropDownContainerStyle={{
+            //   borderWidth: 0, // Remove borders from dropdown list
+            //   backgroundColor: "transparent", // Transparent dropdown list
+            // }}
+            searchable={true}
+            placeholder={placeholder}
+            textStyle={{
+              fontFamily: "payyng-semibold", // Set font family for text
+              fontSize: 16, // Optional: Adjust font size
+            }}
+            searchPlaceholder="Search..."
+            scrollViewProps={{
+              showsVerticalScrollIndicator: true, // Hide vertical scrollbar
+              showsHorizontalScrollIndicator: true, // Hide horizontal scrollbar
             }}
           />
         )}

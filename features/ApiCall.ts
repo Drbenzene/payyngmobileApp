@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Toast } from "../utils/toast";
+import { useLoading } from "@/components/Layouts/LoadingContext";
 
 import axios, { AxiosError } from "axios";
 const Base_URL = "https://optimum-hornet-awfully.ngrok-free.app/api/v1/";
@@ -12,6 +13,8 @@ export default async function APICall(
   isFormData?: boolean,
   silent?: any
 ) {
+  const { showLoader, hideLoader } = useLoading();
+
   const authToken = await AsyncStorage.getItem("token");
   console.log(authToken, "THE TOKEN");
 
@@ -47,12 +50,14 @@ export default async function APICall(
   console.log(baseUrl + Url, "THE URL GOIGIGIGIGI");
 
   try {
+    showLoader();
     const response = await axios({
       method: Method,
       url: baseUrl + Url,
       data: Data,
       // timeout: timeoutOverride || process.env.REACT_APP_REQUEST_TIMEOUT,
     });
+    hideLoader();
 
     if (response?.data?.error) {
       console.log(response?.data?.message, "THE ERROR MESSAGE");
@@ -78,24 +83,6 @@ export default async function APICall(
     const axiosError = err as AxiosError;
     Toast.error(" Server Error");
     Toast.error("Server Error");
+    hideLoader();
   }
 }
-
-// {
-//   "bookType": 2,
-//   "title": "HBK Retrieval",
-//   "authors": ["Gabriel", "Daniel"],
-//   "description": "This book is generally for a test",
-//   "sexuallyExplicit": false,
-//   "minimumAge": 10,
-//   "maximumAge": 28,
-//   "bookCategory": 2,
-//   "monetization": "paid",
-//   "termsAndConditions": true,
-//   "language": 1,
-//   "currency": 2,
-// "bookStatus": "draft",
-// "price": 350,
-// "discount": 10,
-// "quantity": 25
-// }

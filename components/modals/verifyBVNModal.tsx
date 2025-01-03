@@ -2,24 +2,24 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import ModalLayout from "./ModalLayout";
 import PayyngBar from "../Layouts/PayyngBar";
-import { ms } from "react-native-size-matters";
 import Colors from "@/constants/Colors";
-import {
-  responsiveScreenHeight,
-  responsiveScreenWidth,
-} from "react-native-responsive-dimensions";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import PayyngCustomField from "../inputs/PayyngCustomField";
+import PayyngButton from "../button/PayyngButton";
+import { ms } from "react-native-size-matters";
 
 interface VerifyBVNDTO {
   open: boolean;
   setIsOpen: any;
 }
 const VerifyBVNModal = ({ open, setIsOpen }: VerifyBVNDTO) => {
+  const validateBVNHandler = async (values: any) => {
+    console.log(values);
+  };
   return (
-    <ModalLayout modalVisible={open} closeModal={setIsOpen}>
-      <View style={styles.container}>
+    <ModalLayout modalVisible={open} closeModal={setIsOpen} height={70}>
+      <View>
         <PayyngBar
           title={"VERIFY BVN"}
           imageRight={undefined}
@@ -29,6 +29,7 @@ const VerifyBVNModal = ({ open, setIsOpen }: VerifyBVNDTO) => {
           widthRight={0}
           onPressLeft={undefined}
           onPressRight={undefined}
+          titleColor={Colors.white}
         />
         <Formik
           initialValues={{
@@ -41,8 +42,9 @@ const VerifyBVNModal = ({ open, setIsOpen }: VerifyBVNDTO) => {
             bankCode: Yup.string().required("Bank code is required"),
             accountNumber: Yup.string().required("Account number is required"),
           })}
-          onSubmit={(values) => {
-            console.log(values);
+          onSubmit={async (values, { setSubmitting }) => {
+            await validateBVNHandler(values);
+            setSubmitting(false);
           }}
         >
           {({
@@ -68,6 +70,44 @@ const VerifyBVNModal = ({ open, setIsOpen }: VerifyBVNDTO) => {
                 errorMessage={errors.bvn}
                 placeholderTextColor={Colors.placeholderTextColor}
               />
+              <PayyngCustomField
+                type="INPUT"
+                label="Account Number"
+                id="accountNumber"
+                returnKeyType="next"
+                value={values.accountNumber}
+                labelColor={Colors.white}
+                keyboardType="phone-pad"
+                placeholder="01********"
+                onChangeText={handleChange("accountNumber")}
+                onBlur={handleBlur("accountNumber")}
+                errorMessage={errors.accountNumber}
+                placeholderTextColor={Colors.placeholderTextColor}
+              />
+              <PayyngCustomField
+                type="SELECT"
+                label="Select Bank"
+                id="bankCode"
+                returnKeyType="next"
+                value={values.bankCode}
+                labelColor={Colors.white}
+                placeholder="Select Bank"
+                onChangeText={handleChange("bankCode")}
+                onBlur={handleBlur("bankCode")}
+                errorMessage={errors.bankCode}
+                placeholderTextColor={Colors.placeholderTextColor}
+                keyboardType={"default"}
+              />
+              <View style={styles.actionBtnContainer}>
+                <PayyngButton
+                  buttonText="Proceed"
+                  buttonColor={Colors.primaryColor}
+                  buttonTextColor={Colors.bgColor}
+                  onPress={() => {
+                    // router.push("/login");
+                  }}
+                />{" "}
+              </View>
             </View>
           )}
         </Formik>
@@ -79,14 +119,7 @@ const VerifyBVNModal = ({ open, setIsOpen }: VerifyBVNDTO) => {
 export default VerifyBVNModal;
 
 const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-    backgroundColor: Colors.black,
-    // flexDirection: "column",
-    // alignItems: "center",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    width: responsiveScreenWidth(100),
-    height: responsiveScreenHeight(50),
+  actionBtnContainer: {
+    marginTop: ms(20),
   },
 });
