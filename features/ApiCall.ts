@@ -71,7 +71,15 @@ export default async function APICall(
       Toast.error("Something went wrong on our end. Please try again later ");
     }
 
-    console.log(response, "THE RESPONSE ");
+    console.log(response?.data, "THE RESPONSE DATA");
+
+    if (response?.data?.statusCode >= 500) {
+      // response?.data?.message ||
+      Toast.error(
+        "We are currently experiencing some issues. Please try again later"
+      );
+      return;
+    }
 
     const parsedRes = JSON.parse(JSON.stringify(response?.data));
     return (

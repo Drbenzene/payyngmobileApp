@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export async function getUserTransactions() {
   const res = await APICall("transaction/me", "GET");
-  console.log(res, "the wallet ");
+  console.log(res, "the transactionssss outta ");
   return res?.data;
 }
 

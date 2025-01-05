@@ -25,8 +25,7 @@ import { useTransactions } from "@/hooks/useTransaction";
 const { width } = Dimensions.get("window");
 import VerifyBVNModal from "@/components/modals/verifyBVNModal";
 import CreateDollarCard from "@/components/modals/createDollarCard";
-import { create } from "react-test-renderer";
-
+import TransactionCard from "@/components/payyngCard/transactionCard";
 const HomeScreen = () => {
   const { session } = useSession();
 
@@ -35,6 +34,7 @@ const HomeScreen = () => {
     session?.bvnVerified === false ? true : false
   );
   const [openCreateCard, setOpenCreateCard] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const {
     data: wallet,
@@ -53,15 +53,6 @@ const HomeScreen = () => {
 
   console.log(wallet, "my wallet");
   console.log(transactions, "THE TRANSACIONSISISI");
-
-  const quickAccess = [
-    { id: 1, name: "", icon: "send" },
-    { id: 2, name: "Airtime", icon: "phone" },
-    { id: 3, name: "Data", icon: "wifi" },
-    { id: 4, name: "Electricity", icon: "bolt" },
-    { id: 5, name: "Remita Payments", icon: "file-invoice" },
-    { id: 6, name: "Water Bill", icon: "tint" },
-  ];
 
   const currencyCards = [
     {
@@ -165,163 +156,159 @@ const HomeScreen = () => {
     // if()
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([refetchWallet(), refetchTransaction()]);
+    setRefreshing(false);
+  };
+
   return (
     <AppLayout>
       <StatusBar style="dark" />
-      <RefreshControl
-        refreshing={isRefetching || isLoading || transactionRefreshing}
-        onRefresh={() => {
-          refetchWallet();
-          refetchTransaction();
-        }}
+
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        style={styles.container}
       >
-        <ScrollView style={styles.container}>
-          <Animated.View
-            style={
-              {
-                // opacity: fadeAnim
-              }
+        <Animated.View
+          style={
+            {
+              // opacity: fadeAnim,
             }
-          >
-            <Text style={styles.headerText}>
-              Welcome Back {`, ${session?.firstName}`}!
-            </Text>
-            {/* Currency Cards */}
-            <FlatList
-              data={currencyCards}
-              horizontal
-              keyExtractor={(item) => item.id.toString()}
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <View style={styles.currencyCard}>
-                  <View style={styles.currencyHeader}>
-                    <Image
-                      source={{ uri: item.flag }}
-                      style={styles.flagIcon}
-                    />
-                    <Text style={styles.currencyText}>{item.currency}</Text>
-                  </View>
-                  <Text style={styles.balanceText}>{item.balance}</Text>
-                  <Text style={styles.accountText}>{item.accountNumber}</Text>
-                  <View style={styles.cardActions}>
-                    <TouchableOpacity style={styles.cardButton}>
-                      <MaterialIcons
-                        name="send"
-                        size={20}
-                        color={Colors.greenColor}
-                      />
-                      <Text style={styles.iconText}>Send</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.cardButton}>
-                      <MaterialIcons
-                        name="call-received"
-                        size={20}
-                        color={Colors.greenColor}
-                      />
-                      <Text style={styles.iconText}>Receive</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.cardButton}>
-                      <Ionicons
-                        name="swap-horizontal"
-                        size={20}
-                        color={Colors.greenColor}
-                      />
-                      <Text style={styles.iconText}>Exchange</Text>
-                    </TouchableOpacity>
-                  </View>
+          }
+        >
+          <Text style={styles.headerText}>
+            Welcome Back {`, ${session?.firstName}`}!
+          </Text>
+          {/* Currency Cards */}
+          <FlatList
+            data={currencyCards}
+            horizontal
+            keyExtractor={(item) => item.id.toString()}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <View style={styles.currencyCard}>
+                <View style={styles.currencyHeader}>
+                  <Image source={{ uri: item.flag }} style={styles.flagIcon} />
+                  <Text style={styles.currencyText}>{item.currency}</Text>
                 </View>
-              )}
-            />
-            {/* Bills Section */}
-            <Text style={styles.sectionHeader}>Pay Your Bills</Text>
-            <View style={styles.billsContainer}>
-              {bills.map((bill: any) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    push(bill.route);
-                  }}
-                  key={bill.id}
-                  style={styles.billItem}
-                >
-                  <FontAwesome5
-                    name={bill.icon}
-                    size={24}
-                    color={Colors.greenColor}
-                  />
-                  <Text style={styles.billText}>{bill.name}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            {/* Recent Transactions */}
-            <Text style={styles.sectionHeader}>Recent Transactions</Text>
-            {recentTransactions.map((transaction) => (
-              <View key={transaction.id} style={styles.transactionItem}>
-                <Text style={styles.transactionDate}>{transaction.date}</Text>
-                <Text style={styles.transactionType}>{transaction.type}</Text>
-                <Text style={styles.transactionAmount}>
-                  {transaction.amount}
-                </Text>
+                <Text style={styles.balanceText}>{item.balance}</Text>
+                <Text style={styles.accountText}>{item.accountNumber}</Text>
+                <View style={styles.cardActions}>
+                  <TouchableOpacity style={styles.cardButton}>
+                    <MaterialIcons
+                      name="send"
+                      size={20}
+                      color={Colors.greenColor}
+                    />
+                    <Text style={styles.iconText}>Send</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.cardButton}>
+                    <MaterialIcons
+                      name="call-received"
+                      size={20}
+                      color={Colors.greenColor}
+                    />
+                    <Text style={styles.iconText}>Receive</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.cardButton}>
+                    <Ionicons
+                      name="swap-horizontal"
+                      size={20}
+                      color={Colors.greenColor}
+                    />
+                    <Text style={styles.iconText}>Exchange</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
+            )}
+          />
+          {/* Bills Section */}
+          <Text style={styles.sectionHeader}>Pay Your Bills</Text>
+          <View style={styles.billsContainer}>
+            {bills.map((bill: any) => (
+              <TouchableOpacity
+                onPress={() => {
+                  push(bill.route);
+                }}
+                key={bill.id}
+                style={styles.billItem}
+              >
+                <FontAwesome5
+                  name={bill.icon}
+                  size={24}
+                  color={Colors.greenColor}
+                />
+                <Text style={styles.billText}>{bill.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          {/* Recent Transactions */}
+          <Text style={styles.sectionHeader}>Recent Transactions</Text>
+          {transactions &&
+            transactions?.data?.map((transaction: any) => (
+              <TransactionCard
+                key={transaction?.id}
+                transaction={transaction}
+              />
             ))}
 
-            <Animated.View>
-              {/* Dollar Card Section */}
-              <View style={styles.dollarCardSection}>
-                <Text style={styles.sectionHeader}>Create A Dollar Card</Text>
-                <Text style={styles.dollarCardText}>
-                  Generate a virtual dollar card for online purchases.
-                </Text>
-                {/* Mock Dollar Card Design */}
-                <View style={styles.mockDollarCard}>
-                  <Text style={styles.mockCardBankName}>Payyng Bank</Text>
-                  <View style={styles.cardChipContainer}>
-                    <View style={styles.cardChip} />
+          <Animated.View>
+            {/* Dollar Card Section */}
+            <View style={styles.dollarCardSection}>
+              <Text style={styles.sectionHeader}>Create A Dollar Card</Text>
+              <Text style={styles.dollarCardText}>
+                Generate a virtual dollar card for online purchases.
+              </Text>
+              {/* Mock Dollar Card Design */}
+              <View style={styles.mockDollarCard}>
+                <Text style={styles.mockCardBankName}>Payyng</Text>
+                <View style={styles.cardChipContainer}>
+                  <View style={styles.cardChip} />
+                </View>
+                <Text style={styles.mockCardNumber}>**** **** **** 1234</Text>
+                <View style={styles.cardDetailsContainer}>
+                  <View>
+                    <Text style={styles.cardDetailLabel}>CARD HOLDER</Text>
+                    <Text style={styles.cardDetailValue}>
+                      {session?.firstName
+                        ? `${session?.firstName} ${session?.lastName}`
+                        : "John Doe"}
+                    </Text>
                   </View>
-                  <Text style={styles.mockCardNumber}>**** **** **** 1234</Text>
-                  <View style={styles.cardDetailsContainer}>
-                    <View>
-                      <Text style={styles.cardDetailLabel}>CARD HOLDER</Text>
-                      <Text style={styles.cardDetailValue}>
-                        {session?.firstName
-                          ? `${session?.firstName} ${session?.lastName}`
-                          : "John Doe"}
-                      </Text>
-                    </View>
-                    <View>
-                      <Text style={styles.cardDetailLabel}>EXPIRY</Text>
-                      <Text style={styles.cardDetailValue}>12/28</Text>
-                    </View>
+                  <View>
+                    <Text style={styles.cardDetailLabel}>EXPIRY</Text>
+                    <Text style={styles.cardDetailValue}>12/28</Text>
                   </View>
                 </View>
-                <TouchableOpacity
-                  style={styles.createCardButton}
-                  onPress={() => setOpenCreateCard(true)}
-                >
-                  <Text style={styles.createCardText}>Create Card</Text>
-                </TouchableOpacity>
               </View>
-            </Animated.View>
-            {/* Blog Section */}
-            <Text style={styles.sectionHeader}>Stay Informed</Text>
-            <FlatList
-              data={blogs}
-              horizontal
-              keyExtractor={(item) => item.id.toString()}
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <View style={styles.blogCard}>
-                  <Image
-                    source={{ uri: item.image }}
-                    style={styles.blogImage}
-                  />
-                  <Text style={styles.blogTitle}>{item.title}</Text>
-                  <Text style={styles.blogDescription}>{item.description}</Text>
-                </View>
-              )}
-            />
+              <TouchableOpacity
+                style={styles.createCardButton}
+                onPress={() => setOpenCreateCard(true)}
+              >
+                <Text style={styles.createCardText}>Create Card</Text>
+              </TouchableOpacity>
+            </View>
           </Animated.View>
-        </ScrollView>
-      </RefreshControl>
+          {/* Blog Section */}
+          <Text style={styles.sectionHeader}>Stay Informed</Text>
+          <FlatList
+            data={blogs}
+            horizontal
+            keyExtractor={(item) => item.id.toString()}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <View style={styles.blogCard}>
+                <Image source={{ uri: item.image }} style={styles.blogImage} />
+                <Text style={styles.blogTitle}>{item.title}</Text>
+                <Text style={styles.blogDescription}>{item.description}</Text>
+              </View>
+            )}
+          />
+        </Animated.View>
+      </ScrollView>
 
       {openVerifyBVN && (
         <VerifyBVNModal
@@ -452,20 +439,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
-  transactionDate: {
-    fontSize: 14,
-    color: "#666",
-  },
-  transactionType: {
-    fontSize: 14,
-    // fontWeight: "bold",
-    fontFamily: "payyng-semibold",
-    color: Colors.white,
-  },
-  transactionAmount: {
-    fontSize: 14,
-    color: Colors.greenColor,
-  },
   dollarCardSection: {
     marginVertical: 24,
     alignItems: "center",
@@ -520,9 +493,9 @@ const styles = StyleSheet.create({
   },
   mockCardBankName: {
     fontSize: 18,
-    fontWeight: "bold",
     color: "#fff",
     marginBottom: 16,
+    fontFamily: "payyng-semibold",
   },
   cardChipContainer: {
     alignItems: "flex-start",
@@ -539,6 +512,7 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     color: "#fff",
     marginBottom: 16,
+    fontFamily: "payyng-semibold",
   },
   cardDetailsContainer: {
     flexDirection: "row",

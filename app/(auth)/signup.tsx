@@ -163,7 +163,11 @@ const Signup = () => {
                 />
               </View>
 
-              <TouchableOpacity onPress={() => handleSubmit()}>
+              <TouchableOpacity
+                onPress={() => {
+                  push("/(auth)/login");
+                }}
+              >
                 <Text style={styles.backToLogin}>
                   Already have an account?{" "}
                   <Text style={{ color: Colors.white }}>Login</Text>

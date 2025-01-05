@@ -45,6 +45,16 @@ const Onboarding = () => {
     animation();
   }, []);
 
+  // const updateCurrentSlide = (e: {
+  //   nativeEvent: { contentOffset: { x: number } };
+  // }) => {
+  //   const contentOffsetX = e.nativeEvent.contentOffset.x;
+  //   const currentIndex = Math.round(contentOffsetX / width);
+  //   if (currentIndex !== screenIndex) {
+  //     setScreenIndex(currentIndex);
+  //   }
+  // };
+
   const updateCurrentSlide = (e: {
     nativeEvent: { contentOffset: { x: number } };
   }) => {
@@ -55,13 +65,27 @@ const Onboarding = () => {
     }
   };
 
+  // const goToNextSlide = () => {
+  //   if (screenIndex < OnboardingData.length - 1) {
+  //     setScreenIndex(screenIndex + 1);
+  //     flatListRef.current?.scrollToIndex({
+  //       animated: true,
+  //       index: screenIndex + 1,
+  //     });
+  //   }
+  // };
+
   const goToNextSlide = () => {
-    if (screenIndex < OnboardingData.length - 1) {
-      setScreenIndex(screenIndex + 1);
+    console.log("goToNext", screenIndex);
+    const nextIndex = screenIndex + 1;
+    console.log("next", nextIndex);
+    if (nextIndex < OnboardingData.length) {
       flatListRef.current?.scrollToIndex({
         animated: true,
-        index: screenIndex + 1,
+        index: nextIndex,
       });
+      setScreenIndex(nextIndex); // Update the screen index after scrolling
+      console.log("afterrrr", screenIndex);
     }
   };
 

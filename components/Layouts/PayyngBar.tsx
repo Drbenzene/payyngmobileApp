@@ -6,7 +6,6 @@ import { ms, scale, verticalScale } from "react-native-size-matters";
 
 interface Props {
   title: string;
-  imageRight: any;
   heightLeft: number;
   widthLeft: number;
   heightRight: number;
@@ -15,6 +14,9 @@ interface Props {
   onPressRight: any;
   imageLeft?: any;
   titleColor?: string;
+  imageRight?: any;
+  hideBackButton?: boolean;
+  paddingTop?: number;
 }
 
 export default function PayyngBar({
@@ -28,6 +30,8 @@ export default function PayyngBar({
   onPressLeft,
   onPressRight,
   titleColor,
+  hideBackButton,
+  paddingTop,
 }: Props) {
   return (
     <View
@@ -36,24 +40,28 @@ export default function PayyngBar({
         justifyContent: "space-between",
         alignItems: "center",
         // backgroundColor: colors.black,
-        paddingVertical: 10,
-        // paddingHorizontal: 20,
-        paddingTop: ms(20),
+        paddingVertical: ms(10),
+        paddingHorizontal: ms(20),
+        paddingTop: ms(paddingTop || 40),
         backgroundColor: colors.black,
       }}
     >
-      <TouchableOpacity onPress={onPressLeft}>
-        <Image
-          // contentFit="contain"
-          source={imageLeft || require("../../assets/images/back_2.png")}
-          style={{
-            height: verticalScale(heightLeft || 30),
-            width: scale(widthLeft || 30),
-          }}
-        />
+      {hideBackButton && <View style={{ width: scale(2) }} />}
+      {!hideBackButton && (
+        <TouchableOpacity onPress={onPressLeft}>
+          <Image
+            // contentFit="contain"
+            source={imageLeft || require("../../assets/images/back_2.png")}
+            style={{
+              height: verticalScale(heightLeft || 30),
+              width: scale(widthLeft || 30),
+            }}
+          />
 
-        {/* <Text>Back</Text> */}
-      </TouchableOpacity>
+          {/* <Text>Back</Text> */}
+        </TouchableOpacity>
+      )}
+
       <Text
         style={{
           fontSize: scale(20),
