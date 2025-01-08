@@ -7,7 +7,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Image,
   Animated,
   RefreshControl,
 } from "react-native";
@@ -26,6 +25,10 @@ const { width } = Dimensions.get("window");
 import VerifyBVNModal from "@/components/modals/verifyBVNModal";
 import CreateDollarCard from "@/components/modals/createDollarCard";
 import TransactionCard from "@/components/payyngCard/transactionCard";
+import { BILLS_DATA } from "@/constants/constantData";
+import { Image } from "expo-image";
+import BillCard from "@/components/payyngCard/BillCard";
+
 const HomeScreen = () => {
   const { session } = useSession();
 
@@ -225,26 +228,28 @@ const HomeScreen = () => {
               </View>
             )}
           />
+
           {/* Bills Section */}
           <Text style={styles.sectionHeader}>Pay Your Bills</Text>
-          <View style={styles.billsContainer}>
-            {bills.map((bill: any) => (
-              <TouchableOpacity
-                onPress={() => {
-                  push(bill.route);
-                }}
-                key={bill.id}
-                style={styles.billItem}
-              >
-                <FontAwesome5
-                  name={bill.icon}
-                  size={24}
-                  color={Colors.greenColor}
+
+          <FlatList
+            data={BILLS_DATA}
+            keyExtractor={(item) => item.id.toString()}
+            showsHorizontalScrollIndicator={false}
+            numColumns={2}
+            renderItem={({ item }) => (
+              <View style={styles.cardContainer}>
+                <BillCard
+                  bill={{
+                    id: item?.id,
+                    name: item?.name,
+                    route: `${item?.route}?code=${item?.code}`,
+                  }}
                 />
-                <Text style={styles.billText}>{bill.name}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+              </View>
+            )}
+          />
+
           {/* Recent Transactions */}
           <Text style={styles.sectionHeader}>Recent Transactions</Text>
           {transactions &&
@@ -254,7 +259,6 @@ const HomeScreen = () => {
                 transaction={transaction}
               />
             ))}
-
           <Animated.View>
             {/* Dollar Card Section */}
             <View style={styles.dollarCardSection}>
@@ -424,14 +428,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: ms(20),
   },
-  billText: {
-    marginTop: 8,
-    fontSize: 14,
-    color: Colors.greenColor,
-    textAlign: "center",
-    textTransform: "capitalize",
-    fontFamily: "payyng-semibold",
-  },
+
   transactionItem: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -536,5 +533,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "payyng-semibold",
     textAlign: "center",
+  },
+
+  emptyImage: {
+    width: 150,
+    // height: 150,
+  },
+
+  cardContainer: {
+    width: "50%",
+    marginBottom: 16,
+    paddingHorizontal: 6,
   },
 });

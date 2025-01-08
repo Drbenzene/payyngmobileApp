@@ -19,3 +19,48 @@ export const OnboardingData = [
       "Experience effortless financial transactions that empower your daily life.",
   },
 ];
+
+export const BILLS_DATA = [
+  {
+    id: 1,
+    name: "electricity",
+    description: "electricity",
+    code: "electricity",
+    route: "/(pages)/airtime",
+  },
+  {
+    id: 2,
+    name: "Airtime",
+    description: "Airtime",
+    code: "airtime",
+    route: "/(pages)/airtime",
+  },
+  {
+    id: 3,
+    name: "Internet Data Subscription",
+    description: "Internet Data Subscription",
+    code: "internet_data_subscription",
+    route: "/(pages)/airtime",
+  },
+  {
+    id: 4,
+    name: "Cable TV",
+    description: "Cable TV",
+    code: "cable_tv",
+    route: "/(pages)/airtime",
+  },
+  {
+    id: 5,
+    name: "Educations",
+    description: "Educations",
+    code: "educations",
+    route: "/(pages)/airtime",
+  },
+  {
+    id: 6,
+    name: "Data",
+    description: "Data",
+    code: "telcodata",
+    route: "/(pages)/airtime",
+  },
+];

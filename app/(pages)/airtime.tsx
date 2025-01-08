@@ -9,8 +9,12 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import PayyngButton from "@/components/button/PayyngButton";
 import Colors from "@/constants/Colors";
+import { useLocalSearchParams } from "expo-router";
 
 const Airtime = () => {
+  const { code } = useLocalSearchParams();
+
+  // const code = searchParam.
   return (
     <AppLayout>
       <StatusBar style="dark" />
