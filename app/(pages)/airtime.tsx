@@ -1,4 +1,10 @@
-import { SafeAreaView, StyleSheet, View, Text } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import React, { useState } from "react";
 import PayyngBar from "@/components/Layouts/PayyngBar";
 import AppLayout from "@/components/Layouts/AppLayout";
@@ -10,11 +16,40 @@ import * as Yup from "yup";
 import PayyngButton from "@/components/button/PayyngButton";
 import Colors from "@/constants/Colors";
 import { useLocalSearchParams } from "expo-router";
+import { payVendingBill, useVendingCategoryProduct } from "@/hooks/useBill";
+import ErrorMsg from "@/components/inputs/errorMsg";
+import SuccessTransaction from "@/components/modals/successTransaction";
+import VerifyTransactionPin from "@/components/modals/verityTransactionPin";
+import { useWallet } from "@/hooks/useWallet";
+import { useRouter } from "expo-router";
+import { Toast } from "@/utils/toast";
 
 const Airtime = () => {
+  const { push } = useRouter();
+  const { data: walletInfo, refetch } = useWallet();
   const { code } = useLocalSearchParams();
+  const { data } = useVendingCategoryProduct(code as string);
+  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openPin, setOpenPin] = useState(false);
+  const [payload, setPayload] = useState<any>({});
 
-  // const code = searchParam.
+  const payBillHandler = async () => {
+    console.log(payload, "PAYLOAD");
+    if (walletInfo?.NGN?.balance < Number(payload.amount)) {
+      return Toast.info("Insufficient Balance. Please fund your wallet");
+    }
+
+    console.log("PAYLOAD", payload);
+    console.log(payload);
+    const res = await payVendingBill({
+      ...payload,
+      amount: Number(payload.amount),
+    });
+    if (res) {
+      setOpenSuccess(true);
+    }
+  };
+
   return (
     <AppLayout>
       <StatusBar style="dark" />
@@ -25,7 +60,9 @@ const Airtime = () => {
           widthLeft={0}
           heightRight={0}
           widthRight={0}
-          onPressLeft={undefined}
+          onPressLeft={() => {
+            push("/(tabs)");
+          }}
           onPressRight={undefined}
           titleColor={Colors.white}
         />
@@ -35,15 +72,20 @@ const Airtime = () => {
         <View>
           <Formik
             initialValues={{
-              phone: "",
               amount: "",
+              productCode: "",
+              accountNumber: "",
+              billType: "AIRTIME",
+              pin: "",
             }}
             validationSchema={Yup.object({
-              phone: Yup.string().required("Required"),
-              amount: Yup.string().required("Required"),
+              amount: Yup.string().required("Amount is Required"),
+              productCode: Yup.string().required("Network is Required"),
+              accountNumber: Yup.string().required("Phone Number is Required"),
             })}
-            onSubmit={(values) => {
-              console.log(values);
+            onSubmit={async (values, { setSubmitting }) => {
+              setPayload(values);
+              setOpenPin(true);
             }}
           >
             {({
@@ -52,23 +94,81 @@ const Airtime = () => {
               handleSubmit,
               values,
               errors,
-              touched,
               setValues,
+              isSubmitting,
+              isValid,
             }) => (
               <View style={styles.formContainer}>
+                <Text style={styles.networkSelectorText}>
+                  Select Network Provider
+                </Text>
+                <View
+                  style={{
+                    marginTop: vs(20),
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  {data?.length &&
+                    data
+                      ?.filter((item: any) => item?.countryCode === "NGA")
+                      .map?.((item: any) => (
+                        <TouchableOpacity
+                          onPress={() => {
+                            setValues({
+                              ...values,
+                              productCode: item?.code,
+                            });
+                          }}
+                        >
+                          <View
+                            style={{
+                              backgroundColor:
+                                item?.code === values.productCode
+                                  ? Colors.black
+                                  : Colors.greenColor,
+                              padding: ms(10),
+                              borderRadius: ms(5),
+                              margin: ms(5),
+                              width: ms(100),
+                              height: ms(80),
+                              borderColor:
+                                item?.code === values.productCode
+                                  ? Colors.white
+                                  : Colors.black,
+                            }}
+                            key={item?.id}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.white,
+                                fontFamily: "payyng-semibold",
+                              }}
+                            >
+                              {item?.name}
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                      ))}
+                </View>
+                {errors.productCode && (
+                  <ErrorMsg message={`${errors.productCode}`} />
+                )}
+
                 <PayyngCustomField
                   type="INPUT"
                   label="Phone Number"
                   labelColor={Colors.white}
-                  id="phone"
+                  id="accountNumber"
                   returnKeyType="next"
-                  value={values.phone}
+                  value={values.accountNumber}
                   keyboardType="phone-pad"
-                  onChangeText={handleChange("phone")}
-                  onBlur={handleBlur("phone")}
-                  errorMessage={errors.phone}
-                  placeholder={""}
+                  onChangeText={handleChange("accountNumber")}
+                  onBlur={handleBlur("accountNumber")}
+                  errorMessage={errors.accountNumber}
+                  placeholder={"Enter Phone Number"}
                   placeholderTextColor={undefined}
+                  maxLength={11}
                 />
 
                 <PayyngCustomField
@@ -85,12 +185,15 @@ const Airtime = () => {
                   errorMessage={errors.amount}
                   placeholder={"Enter Amount"}
                   setValues={setValues}
+                  values={values}
                 />
 
                 <View style={styles.buttonContainer}>
                   <PayyngButton
                     buttonText="Buy Airtime"
                     onPress={handleSubmit}
+                    isProcessing={isSubmitting}
+                    disabled={isSubmitting || !isValid}
                     buttonColor={Colors.greenColor}
                     buttonTextColor={Colors.white}
                   />
@@ -98,6 +201,27 @@ const Airtime = () => {
               </View>
             )}
           </Formik>
+
+          {openSuccess && (
+            <SuccessTransaction
+              open={openSuccess}
+              setIsOpen={() => {
+                setOpenSuccess(false);
+              }}
+            />
+          )}
+
+          {openPin && (
+            <VerifyTransactionPin
+              open={openPin}
+              setIsOpen={() => {
+                setOpenPin(false);
+              }}
+              onPressHandler={payBillHandler}
+              values={payload}
+              setValues={setPayload}
+            />
+          )}
         </View>
       </SafeAreaView>
     </AppLayout>
@@ -109,13 +233,19 @@ export default Airtime;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // paddingHorizontal: ms(10),
   },
 
   formContainer: {
     paddingHorizontal: ms(10),
+    marginTop: vs(20),
   },
   buttonContainer: {
     marginTop: vs(20),
+  },
+
+  networkSelectorText: {
+    color: Colors.white,
+    fontFamily: "payyng-semibold",
+    fontSize: ms(20),
   },
 });

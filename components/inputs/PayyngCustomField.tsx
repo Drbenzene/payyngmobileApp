@@ -197,7 +197,6 @@ const PayyngCustomField = ({
                 ...values,
                 [id]: val,
               });
-              // setValues(val);
             }}
             prefix={`${currency} `}
             delimiter=","

@@ -58,7 +58,6 @@ const SetTransactionPin = () => {
         >
           {({
             handleChange,
-            handleBlur,
             handleSubmit,
             values,
             errors,

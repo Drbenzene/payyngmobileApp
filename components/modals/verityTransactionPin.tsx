@@ -3,18 +3,26 @@ import { StyleSheet, Text, View } from "react-native";
 import ModalLayout from "./ModalLayout";
 import Colors from "@/constants/Colors";
 import { verticalScale, ms } from "react-native-size-matters";
-import { Image } from "expo-image";
-import * as Animatable from "react-native-animatable";
 import PayyngButton from "../button/PayyngButton";
 import { useWallet } from "@/hooks/useWallet";
 import { useRouter } from "expo-router";
+import PayyngOTPField from "../inputs/PayyngOTPField";
 
-interface SuccessTransactionDTO {
+interface VerifyTransactionPinDTO {
   open: boolean;
   setIsOpen: any;
+  onPressHandler?: any;
+  values: any;
+  setValues: any;
 }
 
-const SuccessTransaction = ({ open, setIsOpen }: SuccessTransactionDTO) => {
+const VerifyTransactionPin = ({
+  open,
+  setIsOpen,
+  onPressHandler,
+  setValues,
+  values,
+}: VerifyTransactionPinDTO) => {
   const { refetch } = useWallet();
   const { push, replace } = useRouter();
 
@@ -23,31 +31,20 @@ const SuccessTransaction = ({ open, setIsOpen }: SuccessTransactionDTO) => {
   }, []);
 
   return (
-    <ModalLayout modalVisible={open} closeModal={setIsOpen} height={100}>
+    <ModalLayout modalVisible={open} closeModal={setIsOpen} height={50}>
+      <Text style={styles.title}>Confirm Transaction</Text>
+      <Text style={styles.description}>
+        Please enter your 4 digits transaction pin to confirm this transaction
+      </Text>
       <View style={styles.container}>
-        {/* Animated Success Image */}
-        <Animatable.View
-          animation="bounceIn"
-          duration={3000}
-          style={styles.imageContainer}
-        >
-          <Image
-            source={require("../../assets/images/success.png")}
-            contentFit="contain"
-            style={styles.successImage}
-          />
-        </Animatable.View>
-
-        {/* Success Message */}
-        <Text style={styles.title}>Transaction Successful!</Text>
-
-        {/* Description */}
-        <Text style={styles.description}>
-          Your gift card purchase has been completed successfully. Thank you for
-          using Payyng.
-        </Text>
-
-        {/* Close Button */}
+        <PayyngOTPField
+          hideValue={true}
+          digits={4}
+          onChange={(value: any) => {
+            setValues({ ...values, pin: value });
+            console.log(values, "THE VALUES AFTER");
+          }}
+        />
 
         <View style={styles.buttonContainer}>
           <PayyngButton
@@ -55,8 +52,10 @@ const SuccessTransaction = ({ open, setIsOpen }: SuccessTransactionDTO) => {
             buttonColor={Colors.greenColor}
             buttonTextColor={Colors.white}
             onPress={() => {
-              setIsOpen();
-              replace("/(tabs)");
+              if (!values.pin || values.pin.length < 4) {
+                return;
+              }
+              onPressHandler();
             }}
           />
         </View>
@@ -65,14 +64,14 @@ const SuccessTransaction = ({ open, setIsOpen }: SuccessTransactionDTO) => {
   );
 };
 
-export default SuccessTransaction;
+export default VerifyTransactionPin;
 
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
     padding: ms(20),
-    marginVertical: ms(100),
+    // marginVertical: ms(100),
   },
   imageContainer: {
     marginBottom: verticalScale(20),
@@ -99,6 +98,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     borderRadius: ms(8),
     paddingVertical: ms(50),
-    paddingHorizontal: ms(20),
+    width: "100%",
+    // paddingHorizontal: ms(20),
   },
 });

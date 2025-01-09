@@ -54,9 +54,6 @@ const HomeScreen = () => {
   } = useTransactions();
   const { push } = useRouter();
 
-  console.log(wallet, "my wallet");
-  console.log(transactions, "THE TRANSACIONSISISI");
-
   const currencyCards = [
     {
       id: 1,
@@ -102,19 +99,6 @@ const HomeScreen = () => {
       accountNumber: `${wallet?.GBP?.accountNumber || ""}`,
       flag: "https://flagcdn.com/w320/gb.png",
     },
-  ];
-
-  const bills = [
-    { id: 1, name: "Airtime", icon: "phone", route: "/(pages)/airtime" },
-    { id: 2, name: "Data", icon: "wifi", route: "/(pages)/airtime" },
-    { id: 3, name: "Electricity", icon: "bolt", route: "/(pages)/airtime" },
-    {
-      id: 4,
-      name: "Remita Payments",
-      icon: "file-invoice",
-      route: "/(pages)/airtime",
-    },
-    { id: 5, name: "Water Bill", icon: "tint", route: "/(pages)/airtime" },
   ];
 
   const recentTransactions = [
