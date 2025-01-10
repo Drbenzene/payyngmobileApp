@@ -51,11 +51,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 // import "../global.css"
 import { useColorScheme } from "@/components/useColorScheme";
-import {
-  QueryClient,
-  QueryClientProvider,
-  focusManager,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import { useSession } from "@/features/ctx";
 import { SessionProvider } from "@/features/ctx";
@@ -131,7 +127,7 @@ function RootLayoutNav() {
           </QueryClientProvider>
         </SessionProvider>
       </LoadingProvider>
-      <Toast position="bottom" bottomOffset={20} />
+      <Toast position="top" bottomOffset={20} />
     </>
   );
 }

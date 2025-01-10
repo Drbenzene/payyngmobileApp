@@ -26,7 +26,7 @@ export const BILLS_DATA = [
     name: "electricity",
     description: "electricity",
     code: "electricity",
-    route: "/(pages)/airtime",
+    route: "/(pages)/electricity",
   },
   {
     id: 2,
@@ -47,7 +47,7 @@ export const BILLS_DATA = [
     name: "Cable TV",
     description: "Cable TV",
     code: "cable_tv",
-    route: "/(pages)/airtime",
+    route: "/(pages)/cable",
   },
   {
     id: 5,

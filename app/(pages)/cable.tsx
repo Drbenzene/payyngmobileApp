@@ -25,7 +25,7 @@ import { useRouter } from "expo-router";
 import { Toast } from "@/utils/toast";
 import PayyngLoader from "@/components/loader/Loading";
 
-const Electricity = () => {
+const CableTV = () => {
   const { push } = useRouter();
   const { data: walletInfo, refetch } = useWallet();
   const { code } = useLocalSearchParams();
@@ -60,7 +60,7 @@ const Electricity = () => {
       <StatusBar style="dark" />
       <View>
         <PayyngBar
-          title={"ELECTRICITY"}
+          title={"AIRTIME"}
           heightLeft={0}
           widthLeft={0}
           heightRight={0}
@@ -115,7 +115,7 @@ const Electricity = () => {
                   }}
                 >
                   {isLoading && <PayyngLoader />}
-                  {/* {data?.length &&
+                  {data?.length &&
                     data
                       ?.filter((item: any) => item?.countryCode === "NGA")
                       .map?.((item: any) => (
@@ -156,7 +156,7 @@ const Electricity = () => {
                             </Text>
                           </View>
                         </TouchableOpacity>
-                      ))} */}
+                      ))}
                 </View>
                 {errors.productCode && (
                   <ErrorMsg message={`${errors.productCode}`} />
@@ -236,7 +236,7 @@ const Electricity = () => {
   );
 };
 
-export default Electricity;
+export default CableTV;
 
 const styles = StyleSheet.create({
   container: {

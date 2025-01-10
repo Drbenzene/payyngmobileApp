@@ -14,6 +14,7 @@ interface VerifyTransactionPinDTO {
   onPressHandler?: any;
   values: any;
   setValues: any;
+  processing?: boolean;
 }
 
 const VerifyTransactionPin = ({
@@ -22,6 +23,7 @@ const VerifyTransactionPin = ({
   onPressHandler,
   setValues,
   values,
+  processing,
 }: VerifyTransactionPinDTO) => {
   const { refetch } = useWallet();
   const { push, replace } = useRouter();
@@ -49,6 +51,8 @@ const VerifyTransactionPin = ({
         <View style={styles.buttonContainer}>
           <PayyngButton
             buttonText={"PROCEED"}
+            isProcessing={processing}
+            disabled={!values.pin || values.pin.length < 4 || processing}
             buttonColor={Colors.greenColor}
             buttonTextColor={Colors.white}
             onPress={() => {

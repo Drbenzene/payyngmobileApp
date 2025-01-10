@@ -101,12 +101,6 @@ const HomeScreen = () => {
     },
   ];
 
-  const recentTransactions = [
-    { id: 1, date: "Dec 18", type: "Sent", amount: "-$50.00" },
-    { id: 2, date: "Dec 17", type: "Received", amount: "+€75.00" },
-    { id: 3, date: "Dec 16", type: "Bill Payment", amount: "-₦10,000" },
-  ];
-
   const blogs = [
     {
       id: 1,

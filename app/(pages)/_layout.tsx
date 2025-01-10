@@ -2,8 +2,8 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
-
 import Airtime from "./airtime";
+import CableTV from "./cable";
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +23,7 @@ export default function PageLayout() {
         },
       }}
     >
+      <Stack.Screen name="cable" component={CableTV} />
       <Stack.Screen name="airtime" component={Airtime} />
     </Stack.Navigator>
   );

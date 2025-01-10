@@ -23,15 +23,17 @@ import VerifyTransactionPin from "@/components/modals/verityTransactionPin";
 import { useWallet } from "@/hooks/useWallet";
 import { useRouter } from "expo-router";
 import { Toast } from "@/utils/toast";
+import PayyngLoader from "@/components/loader/Loading";
 
 const Airtime = () => {
   const { push } = useRouter();
   const { data: walletInfo, refetch } = useWallet();
   const { code } = useLocalSearchParams();
-  const { data } = useVendingCategoryProduct(code as string);
+  const { data, isLoading } = useVendingCategoryProduct(code as string);
   const [openSuccess, setOpenSuccess] = useState(false);
   const [openPin, setOpenPin] = useState(false);
   const [payload, setPayload] = useState<any>({});
+  const [loading, setLoading] = useState(false);
 
   const payBillHandler = async () => {
     console.log(payload, "PAYLOAD");
@@ -41,10 +43,13 @@ const Airtime = () => {
 
     console.log("PAYLOAD", payload);
     console.log(payload);
+    setLoading(true);
     const res = await payVendingBill({
       ...payload,
       amount: Number(payload.amount),
     });
+    setLoading(false);
+    console.log(res, "RES");
     if (res) {
       setOpenSuccess(true);
     }
@@ -109,11 +114,13 @@ const Airtime = () => {
                     justifyContent: "space-between",
                   }}
                 >
+                  {isLoading && <PayyngLoader />}
                   {data?.length &&
                     data
                       ?.filter((item: any) => item?.countryCode === "NGA")
                       .map?.((item: any) => (
                         <TouchableOpacity
+                          key={item?.id}
                           onPress={() => {
                             setValues({
                               ...values,
@@ -220,6 +227,7 @@ const Airtime = () => {
               onPressHandler={payBillHandler}
               values={payload}
               setValues={setPayload}
+              processing={loading}
             />
           )}
         </View>
