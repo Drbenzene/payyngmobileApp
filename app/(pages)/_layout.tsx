@@ -4,6 +4,7 @@ import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
 import Airtime from "./airtime";
 import CableTV from "./cable";
+import Electricity from "./electricity";
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,7 @@ export default function PageLayout() {
     >
       <Stack.Screen name="cable" component={CableTV} />
       <Stack.Screen name="airtime" component={Airtime} />
+      <Stack.Screen name="electricity" component={Electricity} />
     </Stack.Navigator>
   );
 }

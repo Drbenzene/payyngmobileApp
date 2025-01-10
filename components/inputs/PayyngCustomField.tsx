@@ -14,6 +14,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import PhoneInput from "react-native-phone-input";
 import CurrencyInput from "react-native-currency-input";
 import DropDownPicker from "react-native-dropdown-picker";
+import ModalLayout from "../modals/ModalLayout";
+import Colors from "../../constants/Colors";
+import { ms } from "react-native-size-matters";
+import RadioGroup from "react-native-radio-buttons-group";
 
 interface PayyngCustomFieldProps {
   type:
@@ -49,6 +53,7 @@ interface PayyngCustomFieldProps {
   setValues?: any;
   values?: any;
   currency?: string;
+  itemsData?: any[];
 }
 
 const PayyngCustomField = ({
@@ -71,6 +76,7 @@ const PayyngCustomField = ({
 }: PayyngCustomFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   // const [amountValue, setAmountValue] = useState<any>();
 
   return (
@@ -210,7 +216,7 @@ const PayyngCustomField = ({
             }}
           />
         )}
-
+        {/* 
         {type === "SELECT" && (
           <DropDownPicker
             open={open}
@@ -287,13 +293,13 @@ const PayyngCustomField = ({
             }}
             style={{
               borderWidth: 0, // Remove borders
-              backgroundColor: "transparent", // Ensure background is transparent
-              shadowColor: "transparent", // Remove shadows
+              backgroundColor: "#000", // Ensure background is transparent
+              // shadowColor: "transparent", // Remove shadows
             }}
-            // dropDownContainerStyle={{
-            //   borderWidth: 0, // Remove borders from dropdown list
-            //   backgroundColor: "transparent", // Transparent dropdown list
-            // }}
+            dropDownContainerStyle={{
+              borderWidth: 0, // Remove borders from dropdown list
+              backgroundColor: "black", // Transparent dropdown list
+            }}
             searchable={true}
             placeholder={placeholder}
             textStyle={{
@@ -306,10 +312,24 @@ const PayyngCustomField = ({
               showsHorizontalScrollIndicator: true, // Hide horizontal scrollbar
             }}
           />
+        )} */}
+
+        {type === "SELECT" && (
+          <TouchableOpacity
+            id={id}
+            onPress={() => {
+              setOpenModal(true);
+            }}
+            style={styles.inputbox}
+          >
+            <Text>{placeholder}</Text>
+          </TouchableOpacity>
         )}
       </View>
 
       {errorMessage && <ErrorMsg message={`${errorMessage}`} />}
+
+      {openModal && <SelectModalComponent placeholder={placeholder} />}
     </View>
   );
 };
@@ -325,3 +345,63 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
 });
+interface SelectModalProps {
+  placeholder: string;
+}
+const SelectModalComponent = ({ placeholder }: SelectModalProps) => {
+  const data = [
+    {
+      id: "1", // acts as primary key, should be unique and non-empty string
+      label: "Option 1",
+      value: "option1",
+    },
+    {
+      id: "2",
+      label: "Option 2fvc kvn dfkcv kfd fk",
+      value: "option2",
+    },
+  ];
+
+  const [selectedId, setSelectedId] = useState();
+
+  return (
+    <ModalLayout height={50} modalVisible={true} closeModal={undefined}>
+      <View>
+        <Text
+          style={{
+            color: Colors.white,
+            textAlign: "center",
+            fontFamily: "payyng-semibold",
+            fontSize: ms(20),
+          }}
+        >
+          {placeholder}
+        </Text>
+      </View>
+
+      <View
+        style={{
+          marginTop: ms(20),
+        }}
+      >
+        <RadioGroup
+          radioButtons={data}
+          onPress={(value) => {
+            console.log(value, "THE VALUE OOOOOO");
+          }}
+          selectedId={selectedId}
+          labelStyle={{
+            color: Colors.white,
+            fontFamily: "payyng-semibold",
+          }}
+          containerStyle={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+          }}
+        />
+      </View>
+    </ModalLayout>
+  );
+};

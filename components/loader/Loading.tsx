@@ -24,7 +24,7 @@ const PayyngLoader = () => {
       </Animatable.View>
 
       {/* Loading Text */}
-      <Text style={styles.loadingText}>Loading, please wait...</Text>
+      {/* <Text style={styles.loadingText}>Loading, please wait...</Text> */}
     </View>
   );
 };

@@ -1,10 +1,4 @@
-import {
-  SafeAreaView,
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { SafeAreaView, StyleSheet, View, Text } from "react-native";
 import React, { useState } from "react";
 import PayyngBar from "@/components/Layouts/PayyngBar";
 import AppLayout from "@/components/Layouts/AppLayout";

@@ -143,6 +143,26 @@ const HomeScreen = () => {
     setRefreshing(false);
   };
 
+  const handlePress = (item: any) => {
+    // Ensure the route is a valid string
+    if (typeof item?.route === "string") {
+      if (item.route.startsWith("/(pages)/electricity")) {
+        // Handle electricity route with query parameters
+        push(`/(pages)/electricity?code=${item.code}`);
+      } else if (item.route === "/(pages)/airtime") {
+        // Handle airtime route
+        push(`/(pages)/airtime?code=${item.code}`);
+      } else if (item.route === "/(pages)/cable") {
+        // Handle cable route
+        push(`/(pages)/cable?code=${item.code}`);
+      } else {
+        console.warn("Unsupported route provided:", item.route);
+      }
+    } else {
+      console.warn("Invalid route provided:", item?.route);
+    }
+  };
+
   return (
     <AppLayout>
       <StatusBar style="dark" />
@@ -216,15 +236,19 @@ const HomeScreen = () => {
             showsHorizontalScrollIndicator={false}
             numColumns={2}
             renderItem={({ item }) => (
-              <View style={styles.cardContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  handlePress(item);
+                }}
+                style={styles.cardContainer}
+              >
                 <BillCard
                   bill={{
                     id: item?.id,
                     name: item?.name,
-                    route: `${item?.route}?code=${item?.code}`,
                   }}
                 />
-              </View>
+              </TouchableOpacity>
             )}
           />
 

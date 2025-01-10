@@ -1,28 +1,20 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
 import { ms } from "react-native-size-matters";
 import Colors from "@/constants/Colors";
+
 interface BillCardProps {
   bill: {
     id: number;
     name: string;
-    route: any;
   };
 }
 
 const BillCard = ({ bill }: BillCardProps) => {
-  const { push } = useRouter();
   return (
     <View>
-      <TouchableOpacity
-        onPress={() => {
-          push(bill.route);
-        }}
-        key={bill.id}
-        style={styles.billItem}
-      >
+      <View style={styles.billItem}>
         <Image
           source={require("../../assets/images/electricity.png")}
           contentFit="cover"
@@ -30,7 +22,7 @@ const BillCard = ({ bill }: BillCardProps) => {
         />
 
         <Text style={styles.billText}>{bill.name}</Text>
-      </TouchableOpacity>
+      </View>
     </View>
   );
 };

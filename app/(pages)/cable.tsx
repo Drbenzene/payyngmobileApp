@@ -29,6 +29,7 @@ const CableTV = () => {
   const { push } = useRouter();
   const { data: walletInfo, refetch } = useWallet();
   const { code } = useLocalSearchParams();
+  console.log(code, "THE CODE HEHEHE");
   const { data, isLoading } = useVendingCategoryProduct(code as string);
   const [openSuccess, setOpenSuccess] = useState(false);
   const [openPin, setOpenPin] = useState(false);
@@ -41,8 +42,6 @@ const CableTV = () => {
       return Toast.info("Insufficient Balance. Please fund your wallet");
     }
 
-    console.log("PAYLOAD", payload);
-    console.log(payload);
     setLoading(true);
     const res = await payVendingBill({
       ...payload,
@@ -60,7 +59,7 @@ const CableTV = () => {
       <StatusBar style="dark" />
       <View>
         <PayyngBar
-          title={"AIRTIME"}
+          title={"CABLE TV"}
           heightLeft={0}
           widthLeft={0}
           heightRight={0}
@@ -163,6 +162,23 @@ const CableTV = () => {
                 )}
 
                 <PayyngCustomField
+                  type="SELECT"
+                  label="Choose Provider"
+                  labelColor={Colors.white}
+                  id="accountNumber"
+                  returnKeyType="next"
+                  value={values.accountNumber}
+                  // itemsData={}
+                  keyboardType="phone-pad"
+                  onChangeText={handleChange("accountNumber")}
+                  onBlur={handleBlur("accountNumber")}
+                  errorMessage={errors.accountNumber}
+                  placeholder={"Choose Provider"}
+                  placeholderTextColor={undefined}
+                  maxLength={11}
+                />
+
+                <PayyngCustomField
                   type="INPUT"
                   label="Phone Number"
                   labelColor={Colors.white}
@@ -197,7 +213,7 @@ const CableTV = () => {
 
                 <View style={styles.buttonContainer}>
                   <PayyngButton
-                    buttonText="Buy Airtime"
+                    buttonText="PROCEED"
                     onPress={handleSubmit}
                     isProcessing={isSubmitting}
                     disabled={isSubmitting || !isValid}
